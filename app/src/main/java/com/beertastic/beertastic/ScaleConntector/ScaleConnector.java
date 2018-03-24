@@ -1,4 +1,4 @@
-package com.beertastic.beertastic;
+package com.beertastic.beertastic.ScaleConntector;
 
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -11,7 +11,6 @@ import com.felhr.usbserial.UsbSerialDevice;
 import com.felhr.usbserial.UsbSerialInterface;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,18 +18,19 @@ import java.util.Map;
  * Created by Johannes on 24.03.2018.
  */
 
-interface IScaleUpdateListener{
-    void onWeightUpdate(double newWeight);
-    void onScaleConnect();
-    void onScaleDisconnect();
-}
 
-public class ScaleConnector {
-    private static ScaleConnector instance = null;
-    public static ScaleConnector getInstance()
-    {
-        return instance;
-    }
+
+public class ScaleConnector extends AbstractScaleConnector {
+
+    UsbDevice device;
+    UsbDeviceConnection connection;
+    UsbSerialDevice serialPort;
+    android.content.Context context;
+    UsbManager usbManager;
+    ByteBuffer byteBuffer;
+
+    boolean isConnected = false;
+
     public static void createInstance(android.content.Context context, UsbManager usbManager)
     {
         if (instance == null)
@@ -39,42 +39,6 @@ public class ScaleConnector {
         }
     }
 
-    public static final String ACTION_USB_PERMISSION = "com.beertastic.beertastic.USB_PERMISSION";
-    UsbDevice device;
-    UsbDeviceConnection connection;
-    UsbSerialDevice serialPort;
-    android.content.Context context;
-    UsbManager usbManager;
-    ByteBuffer byteBuffer;
-    ArrayList<IScaleUpdateListener> updateListeners = new ArrayList<IScaleUpdateListener>();
-
-    boolean isConnected = false;
-    public void registerUpdateListener(IScaleUpdateListener listener)
-    {
-        if (!updateListeners.contains(listener))
-        {
-            updateListeners.add(listener);
-            Log.i("ScaleConnector", "listener registered. Number of registered listeners: " + updateListeners.size());
-        }
-        {
-            Log.i("ScaleConnector", "listener has already been registered");
-        }
-    }
-    public void deregisterUpdateListener(IScaleUpdateListener listener)
-    {
-        if (updateListeners.contains(listener))
-        {
-            updateListeners.remove(listener);
-            Log.i("ScaleConnector", "listener removed. Number of remaining listeners: " + updateListeners.size());
-        }
-        else
-        {
-            Log.e("ScaleConnector", "the listener to be removed was not registered.  Number of remaining listeners: " + updateListeners.size());
-        }
-    }
-
-    private String lastReceivedMessage = "";
-
     private  ScaleConnector(android.content.Context context, UsbManager usbManager)
     {
         this.context = context;
@@ -82,6 +46,7 @@ public class ScaleConnector {
         byteBuffer = ByteBuffer.allocate(100);
     }
 
+    @Override
     public void connectToScale()
     {
         Log.i("serial", "connectToScale called");
@@ -159,10 +124,12 @@ public class ScaleConnector {
 
     };
 
+    @Override
     public String getLastReceivedMessage() {
         return lastReceivedMessage;
     }
 
+    @Override
     public void onUsbConnect()
     {
         HashMap<String, UsbDevice> usbDevices = usbManager.getDeviceList();
@@ -187,6 +154,7 @@ public class ScaleConnector {
         }
     }
 
+    @Override
     public  void onUsbDisconnect()
     {
         if (isConnected) {
