@@ -91,13 +91,13 @@ public class ScaleConnector {
                 serialPort.setParity(UsbSerialInterface.PARITY_NONE);
                 serialPort.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF);
                 serialPort.read(mScaleMeasurementReceivedCallback); //
-                Log.i("SERIAL", "serial connection estabilshed");
+                Log.i("ScaleConnector", "serial connection estabilshed");
 
             } else {
-                Log.d("SERIAL", "PORT NOT OPEN");
+                Log.d("ScaleConnector", "PORT NOT OPEN");
             }
         } else {
-            Log.d("SERIAL", "PORT IS NULL");
+            Log.d("ScaleConnector", "PORT IS NULL");
         }
     }
     byte[] currentBytes;
@@ -109,7 +109,7 @@ public class ScaleConnector {
         {
             byte[] carryFeed = new byte[] {13, 10};
 
-            Log.i("serial", "byte array length: " + arg0.length);
+            Log.i("ScaleConnector", "byte array length: " + arg0.length);
 
             if ((arg0.length == 2) && (arg0[0] == carryFeed[0]) && (arg0[1] == carryFeed [1]))
             {
@@ -119,18 +119,25 @@ public class ScaleConnector {
                 byteBuffer.rewind();
                 byteBuffer.get(array);
 
-                double newValue = Double.parseDouble(new String(array));
-                for (IScaleUpdateListener listener:updateListeners) {
-                    listener.onWeightUpdate(newValue);
+                try {
+                    double newValue = Double.parseDouble(new String(array));
+                    for (IScaleUpdateListener listener:updateListeners) {
+                        listener.onWeightUpdate(newValue);
+                    }
+                    if (updateListeners.size() == 0)
+                    {
+                        Log.i("ScaleConnector", "no listener registered.");
+                    }
+                    lastReceivedMessage = String.valueOf(newValue);
+                    Log.i("serial", "position:" + position + " current string: " + lastReceivedMessage);
+
                 }
-                if (updateListeners.size() == 0)
+                catch (Exception exception)
                 {
-                    Log.i("ScaleConnector", "no listener registered.");
+                    Log.e("ScaleConnector", "failed to convert received bytes to double: " + exception.toString());
                 }
-                lastReceivedMessage = String.valueOf(newValue);
 
                 byteBuffer.clear();
-                Log.i("serial", "position:" + position + " current string: " + lastReceivedMessage);
                 return;
             }
 

@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity implements IScaleUpdateListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Log.i("MainActivity", "onCreate called.");
+
         b1 = (Button)findViewById(R.id.buttonGetLastSerialOutput);
         t1 = (TextView)findViewById(R.id.textViewSerialOuput);
 
@@ -40,7 +42,6 @@ public class MainActivity extends AppCompatActivity implements IScaleUpdateListe
 //            scale = new ScaleConnector(this, usbManager);
 //        }
         ScaleConnector.createInstance(this, usbManager);
-        ScaleConnector.getInstance().registerUpdateListener(this);
 
         b1.setOnClickListener(b1OnClick);
 
@@ -50,6 +51,9 @@ public class MainActivity extends AppCompatActivity implements IScaleUpdateListe
         filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
         registerReceiver(broadcastReceiver, filter);
+
+        //call the onUsbConnect method to cover the case in which the scale is already connected with the phone when the app starts
+        ScaleConnector.getInstance().onUsbConnect();
 
     }
 
@@ -67,9 +71,17 @@ public class MainActivity extends AppCompatActivity implements IScaleUpdateListe
     };
 
     @Override
-    protected void onStop()
+    protected void onResume()
     {
-        super.onStop();
+        super.onResume();
+        ScaleConnector.getInstance().registerUpdateListener(this);
+    }
+
+    @Override
+    
+    protected void onPause()
+    {
+        super.onPause();
         ScaleConnector.getInstance().deregisterUpdateListener(this);
     }
 
@@ -120,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements IScaleUpdateListe
 
     @Override
     public void onWeightUpdate(double newWeight) {
-        Log.i("MainActivity_UI", "OnUpdate Called pressed. Received string: " + newWeight);
+        Log.i("onWeightUpdate_UI", "OnUpdate Called. Received string: " + newWeight);
         final double finalWeight = newWeight;
         runOnUiThread(new Runnable() {
             @Override
