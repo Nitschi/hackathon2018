@@ -18,6 +18,10 @@ import java.util.Map;
  * Created by Johannes on 24.03.2018.
  */
 
+interface IScaleUpdateListener{
+    void onWeightUpdate(double newWeight);
+}
+
 public class ScaleConnector {
     private static ScaleConnector instance = null;
     public static ScaleConnector getInstance()
@@ -39,6 +43,11 @@ public class ScaleConnector {
     android.content.Context context;
     UsbManager usbManager;
     ByteBuffer byteBuffer;
+    IScaleUpdateListener updateListener = null;
+    public void registerUpdateListener(IScaleUpdateListener listener)
+    {
+        updateListener = listener;
+    }
 
     private String lastReceivedMessage = "";
 
@@ -90,7 +99,11 @@ public class ScaleConnector {
                 byteBuffer.rewind();
                 byteBuffer.get(array);
 
-                lastReceivedMessage = String.valueOf(Double.parseDouble(new String(array)));
+                double newValue = Double.parseDouble(new String(array));
+                if (updateListener != null) {
+                    updateListener.onWeightUpdate(newValue);
+                }
+                lastReceivedMessage = String.valueOf(newValue);
 
                 byteBuffer.clear();
                 Log.i("serial", "position:" + position + " current string: " + lastReceivedMessage);
@@ -141,4 +154,6 @@ public class ScaleConnector {
             Log.d("serial", "tried to close serial connection but serial connection was null " + exception.toString());
         }
     }
+
+
 }

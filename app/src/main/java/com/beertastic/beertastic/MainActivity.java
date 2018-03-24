@@ -18,7 +18,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements IScaleUpdateListener {
 
     Button b1;
     TextView t1;
@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
 //            scale = new ScaleConnector(this, usbManager);
 //        }
         ScaleConnector.createInstance(this, usbManager);
+        ScaleConnector.getInstance().registerUpdateListener(this);
 
         b1.setOnClickListener(b1OnClick);
 
@@ -106,5 +107,18 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onWeightUpdate(double newWeight) {
+        Log.i("MainActivity_UI", "OnUpdate Called pressed. Received string: " + newWeight);
+        final double finalWeight = newWeight;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                t1.setText("current weight: " + finalWeight);
+            }
+        });
+
     }
 }
