@@ -1,14 +1,19 @@
 package com.beertastic.beertastic;
 
+import android.content.DialogInterface;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -18,6 +23,8 @@ public class LocalMultiplayer extends AppCompatActivity {
     ListView listView;
     private String[] colors = {"#F44336", "#2196F3", "#FFC107","#4CAF50", "#795548",
             "#607D8B", "#E91E63", "#9C27B0", "#CDDC39", "#00BCD4"};
+
+    ArrayList<Player> players;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,22 +37,39 @@ public class LocalMultiplayer extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(LocalMultiplayer.this);
+                builder.setTitle("Add player");
+
+                // Set up the input
+                final EditText input = new EditText(LocalMultiplayer.this);
+                // Expected input type
+                input.setInputType(InputType.TYPE_CLASS_TEXT);
+                builder.setView(input);
+
+                // Set up the buttons
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        players.add(new Player(input.getText().toString()));
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                builder.show();
             }
         });
 
         listView = (ListView) findViewById(R.id.listview_players);
 
         //Player player;
-        //ArrayList<Player> players = new ArrayList<Player>();
-
-        final Player[] playersArray = new Player[] {
-                new Player("Johannes"),
-                new Player("Alex"),
-                new Player("Felix"),
-                new Player("Kohli")
-        };
+        players = new ArrayList<Player>();
+        players.add(new Player("Johannes"));
+        players.add(new Player("Felix"));
 
         // Define a new Adapter
         // First parameter - Context
@@ -53,7 +77,7 @@ public class LocalMultiplayer extends AppCompatActivity {
         // Third parameter - ID of the TextView to which the data is written
         // Forth - the Array of data
         ArrayAdapter<Player> adapter = new ArrayAdapter<Player>(this,
-                android.R.layout.simple_list_item_2, android.R.id.text1, playersArray) {
+                android.R.layout.simple_list_item_2, android.R.id.text1, players) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 // Get the current item from ListView
@@ -65,9 +89,13 @@ public class LocalMultiplayer extends AppCompatActivity {
                 TextView text1 = (TextView) view.findViewById(android.R.id.text1);
                 TextView text2 = (TextView) view.findViewById(android.R.id.text2);
 
-                text1.setText(playersArray[position].getName());
-
-                text2.setText(String.valueOf(playersArray[position].getScore()));
+                text1.setText(players.get(position).getName());
+                text1.setTextColor(getColor(android.R.color.white));
+                text1.setTypeface(null, Typeface.BOLD);
+                text1.setPadding(50,50,50,0);
+                text2.setText(String.valueOf(players.get(position).getScore()));
+                text2.setTextColor(getColor(android.R.color.white));
+                text2.setPadding(50,0,50,50);
 
                 return view;
             }
