@@ -2,6 +2,7 @@ package com.beertastic.beertastic;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
 /**
  * Created by alexander on 24.03.18.
@@ -29,12 +30,20 @@ public class GameLogic implements IScaleEventListener {
     private static final int BEER_ON_SCALE_AFTER_DRINK = 3;
     private int currentState = WAIT_FOR_NEXT_PLAYER;
     private double amountBefore = 0;
+    private double limit = 0;
 
+
+    public void resetGame(){
+        players = new ArrayList<Player>();
+        startRound();
+    }
 
     private void startRound() {
         currentState = WAIT_FOR_NEXT_PLAYER;
-        Player currentPlayer = players.get(0);
-        //Send message "currentPlayer, please place your drink on the scale"
+        Random rand = new Random();
+        limit = rand.nextDouble() * 80 + 20; //random value between 20 and 100
+
+        //TODO: Send message "currentPlayer, please place your drink on the scale"
     }
 
     private void weighBeerBeforeDrink(double amount){
@@ -47,9 +56,15 @@ public class GameLogic implements IScaleEventListener {
         if(amount > amountBefore) {
             //new Beer or Error?
         }
-       int score = 0;
-       //TODO : Think of fancy algorithm
-       return score;
+        double deltaAmount = amount - amountBefore;
+        int score = (int) deltaAmount;
+        if( deltaAmount < limit) {
+            return score;
+        }
+        else {
+            //TODO: STRAFWASSER!
+            return 0;
+        }
     }
 
     private void evaluateRound(double amount) {
