@@ -8,9 +8,43 @@
     tools:context="com.beertastic.beertastic.LocalMultiplayer"
     tools:showIn="@layout/activity_local_multiplayer">
 
-    <ListView
-        android:id="@+id/listview_players"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:minHeight="?attr/listPreferredItemHeight"
+            android:mode="twoLine"
+            android:paddingStart="?android:listPreferredItemPaddingStart"
+            android:paddingEnd="?android:listPreferredItemPaddingEnd">
+
+            <TextView android:id="@+id/activeplayer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textAppearance="?attr/textAppearanceListItem"
+                android:text="Player"
+                android:textStyle="bold"
+                style="@android:style/TextAppearance.Large"/>
+
+            <TextView android:id="@+id/gamemessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceListItemSecondary"
+                android:text="Message"
+                style="@android:style/TextAppearance.Large"/>
+
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/listview_players"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
 
 </android.support.constraint.ConstraintLayout>
