@@ -22,6 +22,11 @@ public class GameLogic implements IScaleEventListener {
         return GameLogic.game;
     }
 
+    public void setListener(IGameLogicListener listener) {
+        this.listener = listener;
+    }
+
+    private IGameLogicListener listener = null;
     private ArrayList<Player> players;
 
     private static final int WAIT_FOR_NEXT_PLAYER = 0;
@@ -30,8 +35,7 @@ public class GameLogic implements IScaleEventListener {
     private static final int BEER_ON_SCALE_AFTER_DRINK = 3;
     private int currentState = WAIT_FOR_NEXT_PLAYER;
     private double amountBefore = 0;
-    private double limit = 0;
-
+    private int limit = 0;
 
     public void resetGame(){
         players = new ArrayList<Player>();
@@ -41,38 +45,41 @@ public class GameLogic implements IScaleEventListener {
     private void startRound() {
         currentState = WAIT_FOR_NEXT_PLAYER;
         Random rand = new Random();
-        limit = rand.nextDouble() * 80 + 20; //random value between 20 and 100
-
-        //TODO: Send message "currentPlayer, please place your drink on the scale"
+        limit = (int) (rand.nextDouble() * 80 + 20); //random value between 20 and 100
+        updateUI("Please place your drink onto the scale");
     }
 
     private void weighBeerBeforeDrink(double amount){
         amountBefore = amount;
-        //send message that they can now drink
+        updateUI("Drink now. But know your limit of "+ String.valueOf(limit) + "ml!");
 
     }
 
     private int calculateScore(double amount){
-        if(amount > amountBefore) {
-            //new Beer or Error?
-        }
         double deltaAmount = amount - amountBefore;
         int score = (int) deltaAmount;
         if( deltaAmount < limit) {
             return score;
         }
         else {
-            //TODO: STRAFWASSER!
             return 0;
         }
     }
 
     private void evaluateRound(double amount) {
         Player currentPlayer = players.get(0);
-        currentPlayer.setScore(currentPlayer.getScore() + calculateScore(amount));
-        //TODO: show Evaluation here
-        Collections.rotate(players , -1 );  //rotates the list, effectively setting the finished player to the
-                                            // end and the second player to the beginning of the list
+        double deltaAmount = amountBefore - amount;
+        int score = (int) deltaAmount;
+        if( deltaAmount > limit) {
+            score = -20;
+        }
+        currentPlayer.setScore(currentPlayer.getScore() + score);
+
+        if(score == -20){
+            updateUI("You drank too much! -20 points and drink one glass of water!");
+        } else{
+            updateUI("Cheers! You just earned " + score + " additional points!");
+        }
 
     }
 
@@ -80,12 +87,27 @@ public class GameLogic implements IScaleEventListener {
         players.add(new Player(name));
     }
 
+    public ArrayList<Player> getPlayers(){
+        return players;
+    }
+
+    private void updateUI(String message){
+
+        if (listener == null) {
+            return;
+        }
+        listener.onUIUpdate(players, message);
+    }
+
     @Override
     public void onDrinkRemoved() {
         if( currentState == BEER_ON_SCALE_BEFORE_DRINK) {
             currentState = PLAYER_DRINKING;
+            updateUI("Enjoy your drink, but don't forget your limit is " + limit + "ml!");
         } else {
             currentState = WAIT_FOR_NEXT_PLAYER;
+            Collections.rotate(players , -1 );  //rotates the list, effectively setting the finished player to the
+            // end and the second player to the beginning of the list
             startRound();
         }
     }
