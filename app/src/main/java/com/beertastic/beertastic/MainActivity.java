@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     OnClickListener b1OnClick = new OnClickListener(){
         public void onClick(View v)
         {
+            Log.i("UI", "Button pressed. Received string: " + scale.getLastReceivedMessage());
             t1.setText("new int: " + scale.getLastReceivedMessage());
         }
 

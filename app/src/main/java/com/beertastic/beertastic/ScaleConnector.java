@@ -25,6 +25,7 @@ public class ScaleConnector {
     UsbSerialDevice serialPort;
     android.content.Context context;
     UsbManager usbManager;
+    ByteBuffer byteBuffer;
 
     private String lastReceivedMessage = "";
 
@@ -32,6 +33,7 @@ public class ScaleConnector {
     {
         this.context = context;
         this.usbManager = usbManager;
+        byteBuffer = ByteBuffer.allocate(100);
     }
 
     public void connectToScale()
@@ -70,11 +72,21 @@ public class ScaleConnector {
             if ((arg0.length == 2) && (arg0[0] == carryFeed[0]) && (arg0[1] == carryFeed [1]))
             {
                 Log.i("serial", "new line");
+                int position = byteBuffer.position();
+                byte[] array = new byte[byteBuffer.position()];
+                byteBuffer.rewind();
+                byteBuffer.get(array);
+
+                lastReceivedMessage = String.valueOf(Double.parseDouble(new String(array)));
+
+                byteBuffer.clear();
+                Log.i("serial", "position:" + position + " current string: " + lastReceivedMessage);
                 return;
             }
 
-            lastReceivedMessage = new String(arg0);;
-            Log.i("serial", lastReceivedMessage);
+            byteBuffer.put(arg0);
+            Log.i("serial", "current buffer pos: " + byteBuffer.position());
+
         }
 
     };
