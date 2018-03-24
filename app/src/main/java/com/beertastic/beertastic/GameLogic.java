@@ -28,6 +28,7 @@ public class GameLogic implements IScaleEventListener {
     private static final int PLAYER_DRINKING = 2;
     private static final int BEER_ON_SCALE_AFTER_DRINK = 3;
     private int currentState = WAIT_FOR_NEXT_PLAYER;
+    private double amountBefore = 0;
 
 
     private void startRound() {
@@ -36,27 +37,32 @@ public class GameLogic implements IScaleEventListener {
         //Send message "currentPlayer, please place your drink on the scale"
     }
 
-    private void weighBeerBeforeDrink(){
-        //save weight
+    private void weighBeerBeforeDrink(double amount){
+        amountBefore = amount;
         //send message that they can now drink
 
     }
 
-    private void evaluateRound(int score) {
+    private int calculateScore(double amount){
+        if(amount > amountBefore) {
+            //new Beer or Error?
+        }
+       int score = 0;
+       //TODO : Think of fancy algorithm
+       return score;
+    }
+
+    private void evaluateRound(double amount) {
         Player currentPlayer = players.get(0);
-        currentPlayer.setScore(currentPlayer.getScore() + score);
+        currentPlayer.setScore(currentPlayer.getScore() + calculateScore(amount));
+        //TODO: show Evaluation here
         Collections.rotate(players , -1 );  //rotates the list, effectively setting the finished player to the
                                             // end and the second player to the beginning of the list
 
     }
 
-    private void addToScore(Player player, int addScore) {
-        player.setScore(player.getScore() + addScore);
-    }
-
-
-    private void addPlayer (Player newPlayer) {
-        players.add(newPlayer);
+    public void addPlayer (String name) {
+        players.add(new Player(name));
     }
 
     @Override
@@ -73,10 +79,10 @@ public class GameLogic implements IScaleEventListener {
     public void onDrinkPlaced(double amount) {
         if ( currentState == WAIT_FOR_NEXT_PLAYER) {
             currentState = BEER_ON_SCALE_BEFORE_DRINK;
-            weighBeerBeforeDrink();
+            weighBeerBeforeDrink(amount);
         } else if (currentState == PLAYER_DRINKING) {
             currentState = BEER_ON_SCALE_AFTER_DRINK;
-            evaluateRound((int) amount);
+            evaluateRound(amount);
         }
 
     }
