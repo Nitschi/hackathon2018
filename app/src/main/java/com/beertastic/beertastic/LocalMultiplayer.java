@@ -40,8 +40,8 @@ public class LocalMultiplayer extends AppCompatActivity {
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(LocalMultiplayer.this);
+            public void onClick(final View view) {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(LocalMultiplayer.this);
                 builder.setTitle("Add Player");
 
                 // Set up the input
@@ -54,7 +54,12 @@ public class LocalMultiplayer extends AppCompatActivity {
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        players.add(new Player(input.getText().toString()));
+                        if(input.getText().length() > 0){ // only if name provided
+                            players.add(new Player(input.getText().toString()));
+                        } else {
+                            Snackbar.make(view, "Please enter a name!", Snackbar.LENGTH_SHORT)
+                                    .setAction("Action", null).show();
+                        }
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -113,7 +118,7 @@ public class LocalMultiplayer extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, final View view,
                                     final int position, long id) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(LocalMultiplayer.this);
+                final AlertDialog.Builder builder = new AlertDialog.Builder(LocalMultiplayer.this);
                 builder.setTitle("Edit Player");
 
                 // Set up the input
@@ -126,7 +131,12 @@ public class LocalMultiplayer extends AppCompatActivity {
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        players.get(position).setName(input.getText().toString());
+                        if(input.getText().length() > 0){
+                            players.get(position).setName(input.getText().toString());
+                        } else {
+                            Snackbar.make(view, "Please enter a name!", Snackbar.LENGTH_SHORT)
+                                    .setAction("Action", null).show();
+                        }
                     }
                 });
                 builder.setNegativeButton("Remove", new DialogInterface.OnClickListener() {
