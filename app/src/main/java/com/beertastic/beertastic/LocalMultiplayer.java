@@ -1,5 +1,6 @@
 package com.beertastic.beertastic;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -12,6 +13,9 @@ import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -38,13 +42,13 @@ public class LocalMultiplayer extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(LocalMultiplayer.this);
-                builder.setTitle("Add player");
+                builder.setTitle("Add Player");
 
                 // Set up the input
                 final EditText input = new EditText(LocalMultiplayer.this);
                 // Expected input type
-                input.setInputType(InputType.TYPE_CLASS_TEXT);
-                builder.setView(input);
+                input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+                //builder.setView(input);
 
                 // Set up the buttons
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -60,13 +64,15 @@ public class LocalMultiplayer extends AppCompatActivity {
                     }
                 });
 
-                builder.show();
+                builder.setView(input);
+                AlertDialog dialog = builder.create();
+                dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                dialog.show();
             }
         });
 
         listView = (ListView) findViewById(R.id.listview_players);
 
-        //Player player;
         players = new ArrayList<Player>();
         players.add(new Player("Johannes"));
         players.add(new Player("Felix"));
@@ -102,6 +108,60 @@ public class LocalMultiplayer extends AppCompatActivity {
         };
         // Assign adapter to ListView
         listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, final View view,
+                                    final int position, long id) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(LocalMultiplayer.this);
+                builder.setTitle("Edit Player");
+
+                // Set up the input
+                final EditText input = new EditText(LocalMultiplayer.this);
+                // Expected input type
+                input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+                input.setText(players.get(position).getName());
+
+                // Set up the buttons
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        players.get(position).setName(input.getText().toString());
+                    }
+                });
+                builder.setNegativeButton("Remove", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        new AlertDialog.Builder(LocalMultiplayer.this).setTitle("Confirm Delete")
+                                .setMessage("Are you sure to delete " + players.get(position).getName() + "?")
+                                .setPositiveButton("Yes",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                // Perform Action & Dismiss dialog
+                                                dialog.dismiss();
+                                                Snackbar.make(view, "Player " + players.get(position).getName() + " removed", Snackbar.LENGTH_LONG)
+                                                        .setAction("Action", null).show();
+                                                players.remove(position);
+                                            }
+                                        })
+                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // Do nothing
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .create()
+                                .show();
+                    };
+                });
+
+                builder.setView(input);
+                AlertDialog dialog = builder.create();
+                dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                dialog.show();
+            }
+        });
     }
 
 }
