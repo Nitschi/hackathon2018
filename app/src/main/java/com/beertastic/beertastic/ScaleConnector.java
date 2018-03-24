@@ -11,6 +11,7 @@ import com.felhr.usbserial.UsbSerialDevice;
 import com.felhr.usbserial.UsbSerialInterface;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,17 +37,36 @@ public class ScaleConnector {
         }
     }
 
-    public static final String ACTION_USB_PERMISSION = "com.hariharan.arduinousb.USB_PERMISSION";
+    public static final String ACTION_USB_PERMISSION = "com.beertastic.beertastic.USB_PERMISSION";
     UsbDevice device;
     UsbDeviceConnection connection;
     UsbSerialDevice serialPort;
     android.content.Context context;
     UsbManager usbManager;
     ByteBuffer byteBuffer;
-    IScaleUpdateListener updateListener = null;
+    ArrayList<IScaleUpdateListener> updateListeners = new ArrayList<IScaleUpdateListener>();
     public void registerUpdateListener(IScaleUpdateListener listener)
     {
-        updateListener = listener;
+        if (!updateListeners.contains(listener))
+        {
+            updateListeners.add(listener);
+            Log.i("ScaleConnector", "listener registered. Number of registered listeners: " + updateListeners.size());
+        }
+        {
+            Log.i("ScaleConnector", "listener has already been registered");
+        }
+    }
+    public void deregisterUpdateListener(IScaleUpdateListener listener)
+    {
+        if (updateListeners.contains(listener))
+        {
+            updateListeners.remove(listener);
+            Log.i("ScaleConnector", "listener removed. Number of remaining listeners: " + updateListeners.size());
+        }
+        else
+        {
+            Log.e("ScaleConnector", "the listener to be removed was not registered.  Number of remaining listeners: " + updateListeners.size());
+        }
     }
 
     private String lastReceivedMessage = "";
@@ -100,8 +120,12 @@ public class ScaleConnector {
                 byteBuffer.get(array);
 
                 double newValue = Double.parseDouble(new String(array));
-                if (updateListener != null) {
-                    updateListener.onWeightUpdate(newValue);
+                for (IScaleUpdateListener listener:updateListeners) {
+                    listener.onWeightUpdate(newValue);
+                }
+                if (updateListeners.size() == 0)
+                {
+                    Log.i("ScaleConnector", "no listener registered.");
                 }
                 lastReceivedMessage = String.valueOf(newValue);
 

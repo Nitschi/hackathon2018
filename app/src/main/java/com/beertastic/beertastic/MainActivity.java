@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements IScaleUpdateListe
 
     }
 
+
     OnClickListener b1OnClick = new OnClickListener(){
         public void onClick(View v)
         {
@@ -64,6 +65,14 @@ public class MainActivity extends AppCompatActivity implements IScaleUpdateListe
 
 
     };
+
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        ScaleConnector.getInstance().deregisterUpdateListener(this);
+    }
+
 
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() { //Broadcast Receiver to automatically start and stop the Serial connection.
         @Override
