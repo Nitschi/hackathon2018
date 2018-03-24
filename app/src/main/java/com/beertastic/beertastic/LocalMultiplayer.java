@@ -18,15 +18,20 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
 public class LocalMultiplayer extends AppCompatActivity {
     ListView listView;
-    private String[] colors = {"#F44336", "#2196F3", "#FFC107","#4CAF50", "#795548",
-            "#607D8B", "#E91E63", "#9C27B0", "#CDDC39", "#00BCD4"};
+    TextView activePlayer;
+    TextView activePlayerScore;
+    TextView gameMessage;
+    LinearLayout gameView;
 
     ArrayList<Player> players;
 
@@ -76,11 +81,30 @@ public class LocalMultiplayer extends AppCompatActivity {
             }
         });
 
-        listView = (ListView) findViewById(R.id.listview_players);
-
         players = new ArrayList<Player>();
         players.add(new Player("Johannes"));
         players.add(new Player("Felix"));
+
+        activePlayer = (TextView) findViewById(R.id.active_player);
+        activePlayerScore = (TextView) findViewById(R.id.active_player_score);
+        gameMessage = (TextView) findViewById(R.id.game_message);
+        activePlayer.setTextColor(getColor(android.R.color.white));
+        activePlayerScore.setTextColor(getColor(android.R.color.white));
+        gameMessage.setTextColor(getColor(android.R.color.white));
+
+        activePlayer.setPadding(50,50,50,0);
+        activePlayerScore.setPadding(50,0,50,0);
+        gameMessage.setPadding(50,0,50,50);
+
+
+        // Method to update stuff called by Alex
+        activePlayer.setText(players.get(0).getName());
+        activePlayerScore.setText(String.valueOf(players.get(0).getScore()));
+
+        gameView = (LinearLayout) findViewById(R.id.gameview);
+        gameView.setBackgroundColor(Color.parseColor(players.get(0).getColor()));
+
+        listView = (ListView) findViewById(R.id.listview_players);
 
         // Define a new Adapter
         // First parameter - Context
@@ -93,9 +117,11 @@ public class LocalMultiplayer extends AppCompatActivity {
             public View getView(int position, View convertView, ViewGroup parent) {
                 // Get the current item from ListView
                 View view = super.getView(position, convertView, parent);
-                position = position % colors.length; // avoid overflow
+
+                //view.setVisibility((position == 0) ? View.INVISIBLE : View.VISIBLE); // hide current player
+
                 // Set list item color from color array
-                view.setBackgroundColor(Color.parseColor(colors[position]));
+                view.setBackgroundColor(Color.parseColor(players.get(position).getColor()));
 
                 TextView text1 = (TextView) view.findViewById(android.R.id.text1);
                 TextView text2 = (TextView) view.findViewById(android.R.id.text2);

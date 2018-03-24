@@ -7,20 +7,20 @@ import android.graphics.Color;
  */
 
 public class Player {
-    public Player(String name, Color color){
+    public Player(String name){
         this.name = name;
-        this.color = color;
+        this.color = ColorFactory.getColor(); // new color from factory
     }
 
     private String name;
     private int score = 0;
-    private Color color;
+    private String color;
 
-    public Color getColor() {
+    public String getColor() {
         return color;
     }
 
-    public void setColor(Color color) {
+    public void setColor(String color) {
         this.color = color;
     }
 
