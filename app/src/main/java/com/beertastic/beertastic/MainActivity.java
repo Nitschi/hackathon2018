@@ -18,12 +18,19 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity implements IScaleUpdateListener {
+public class MainActivity extends AppCompatActivity implements IScaleUpdateListener, IScaleEventListener {
 
     Button b1;
     TextView t1;
+    TextView t2;
+    TextView ttest;
+    int removedCounter = 0;
+    int placedCounter = 0;
+    double placedAmount = 0;
     //ScaleConnector scale = null;
     UsbManager usbManager;
+
+    private ScaleProcessor scaleProcessor;
 
 
     @Override
@@ -33,8 +40,9 @@ public class MainActivity extends AppCompatActivity implements IScaleUpdateListe
 
         Log.i("MainActivity", "onCreate called.");
 
-        b1 = (Button)findViewById(R.id.buttonGetLastSerialOutput);
         t1 = (TextView)findViewById(R.id.textViewSerialOuput);
+        t2 = (TextView)findViewById(R.id.textViewPercentage);
+        ttest = (TextView)findViewById(R.id.textView2);
 
         usbManager = (UsbManager) getSystemService(this.USB_SERVICE);
 //        if (scale == null) {
@@ -43,8 +51,8 @@ public class MainActivity extends AppCompatActivity implements IScaleUpdateListe
 //        }
         ScaleConnector.createInstance(this, usbManager);
 
-        b1.setOnClickListener(b1OnClick);
-
+        scaleProcessor = new ScaleProcessor();
+        scaleProcessor.registerListener(this);
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(ScaleConnector.ACTION_USB_PERMISSION);
@@ -56,19 +64,6 @@ public class MainActivity extends AppCompatActivity implements IScaleUpdateListe
         ScaleConnector.getInstance().onUsbConnect();
 
     }
-
-
-    OnClickListener b1OnClick = new OnClickListener(){
-        public void onClick(View v)
-        {
-
-            Log.i("MainActivity_UI", "Button pressed. Received string: " + ScaleConnector.getInstance().getLastReceivedMessage());
-            t1.setText("new int: " + ScaleConnector.getInstance().getLastReceivedMessage());
-        }
-
-
-
-    };
 
     @Override
     protected void onResume()
@@ -133,14 +128,42 @@ public class MainActivity extends AppCompatActivity implements IScaleUpdateListe
     @Override
     public void onWeightUpdate(double newWeight) {
         Log.i("onWeightUpdate_UI", "OnUpdate Called. Received string: " + newWeight);
-        final double finalWeight = newWeight;
+        WeightToDrinkConverter conv = new WeightToDrinkConverter(315, 330);
+        final int finalWeight = conv.getAmount(newWeight);
+        final int finalPercentage = conv.getPercentage(newWeight);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                t1.setText("current weight: " + finalWeight);
+                t1.setText(String.valueOf(finalWeight) + "ml");
+                t2.setText(String.valueOf(finalPercentage) + "%");
             }
         });
+        scaleProcessor.postData(finalWeight);
+    }
 
+    @Override
+    public void onDrinkRemoved() {
+        removedCounter++;
+        updateEvent();
+    }
+
+    @Override
+    public void onDrinkPlaced(double amount) {
+        placedCounter++;
+        placedAmount = amount;
+        updateEvent();
+    }
+
+    private void updateEvent(){
+        final int finalPlacedCounter = placedCounter;
+        final int finalRemovedCounter = removedCounter;
+        final double finalAmount = placedAmount;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ttest.setText("Removed: " + finalRemovedCounter + ", Placed: " + finalPlacedCounter + "Amount: " + placedAmount);
+            }
+        });
     }
 
     @Override
