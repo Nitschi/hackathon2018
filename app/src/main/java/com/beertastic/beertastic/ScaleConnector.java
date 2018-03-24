@@ -21,6 +21,8 @@ import java.util.Map;
 
 interface IScaleUpdateListener{
     void onWeightUpdate(double newWeight);
+    void onScaleConnect();
+    void onScaleDisconnect();
 }
 
 public class ScaleConnector {
@@ -45,6 +47,8 @@ public class ScaleConnector {
     UsbManager usbManager;
     ByteBuffer byteBuffer;
     ArrayList<IScaleUpdateListener> updateListeners = new ArrayList<IScaleUpdateListener>();
+
+    boolean isConnected = false;
     public void registerUpdateListener(IScaleUpdateListener listener)
     {
         if (!updateListeners.contains(listener))
@@ -93,6 +97,13 @@ public class ScaleConnector {
                 serialPort.read(mScaleMeasurementReceivedCallback); //
                 Log.i("ScaleConnector", "serial connection estabilshed");
 
+                if (!isConnected) {
+                    for (IScaleUpdateListener listener : updateListeners) {
+                        listener.onScaleConnect();
+                    }
+                    isConnected = true;
+                }
+
             } else {
                 Log.d("ScaleConnector", "PORT NOT OPEN");
             }
@@ -109,11 +120,11 @@ public class ScaleConnector {
         {
             byte[] carryFeed = new byte[] {13, 10};
 
-            Log.i("ScaleConnector", "byte array length: " + arg0.length);
+            Log.v("ScaleConnector", "byte array length: " + arg0.length);
 
             if ((arg0.length == 2) && (arg0[0] == carryFeed[0]) && (arg0[1] == carryFeed [1]))
             {
-                Log.i("serial", "new line");
+                Log.v("serial", "new line");
                 int position = byteBuffer.position();
                 byte[] array = new byte[byteBuffer.position()];
                 byteBuffer.rewind();
@@ -126,10 +137,10 @@ public class ScaleConnector {
                     }
                     if (updateListeners.size() == 0)
                     {
-                        Log.i("ScaleConnector", "no listener registered.");
+                        Log.v("ScaleConnector", "no listener registered.");
                     }
                     lastReceivedMessage = String.valueOf(newValue);
-                    Log.i("serial", "position:" + position + " current string: " + lastReceivedMessage);
+                    Log.v("serial", "position:" + position + " current string: " + lastReceivedMessage);
 
                 }
                 catch (Exception exception)
@@ -142,7 +153,7 @@ public class ScaleConnector {
             }
 
             byteBuffer.put(arg0);
-            Log.i("serial", "current buffer pos: " + byteBuffer.position());
+            Log.v("serial", "current buffer pos: " + byteBuffer.position());
 
         }
 
@@ -178,6 +189,12 @@ public class ScaleConnector {
 
     public  void onUsbDisconnect()
     {
+        if (isConnected) {
+            for (IScaleUpdateListener listener : updateListeners) {
+                listener.onScaleDisconnect();
+            }
+            isConnected = false;
+        }
         try {
             serialPort.close();
         }

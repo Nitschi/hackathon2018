@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements IScaleUpdateListe
     }
 
     @Override
-    
+
     protected void onPause()
     {
         super.onPause();
@@ -141,5 +141,15 @@ public class MainActivity extends AppCompatActivity implements IScaleUpdateListe
             }
         });
 
+    }
+
+    @Override
+    public void onScaleConnect() {
+        Log.i("MainActivity_UI", "scale connected.");
+    }
+
+    @Override
+    public void onScaleDisconnect() {
+        Log.i("MainActivity_UI", "scale disconnected.");
     }
 }
