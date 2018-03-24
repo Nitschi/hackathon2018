@@ -17,15 +17,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Serial Ouput"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textSize="36sp"
+            android:textStyle="bold"
             android:visibility="visible" />
 
-        <Button
-            android:id="@+id/buttonGetLastSerialOutput"
+        <TextView
+            android:id="@+id/textViewPercentage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:enabled="true"
-            android:text="Get Last Output"
-            android:visibility="visible" />
+            android:text="percentage"
+            android:textAlignment="center"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
+
     </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>
