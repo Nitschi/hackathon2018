@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button b1;
     TextView t1;
-    ScaleConnector scale;
+    //ScaleConnector scale = null;
     UsbManager usbManager;
 
 
@@ -34,10 +34,15 @@ public class MainActivity extends AppCompatActivity {
         b1 = (Button)findViewById(R.id.buttonGetLastSerialOutput);
         t1 = (TextView)findViewById(R.id.textViewSerialOuput);
 
+        usbManager = (UsbManager) getSystemService(this.USB_SERVICE);
+//        if (scale == null) {
+//            Log.i("MainActivity_UI", "new Scale Object created.");
+//            scale = new ScaleConnector(this, usbManager);
+//        }
+        ScaleConnector.createInstance(this, usbManager);
+
         b1.setOnClickListener(b1OnClick);
 
-        usbManager = (UsbManager) getSystemService(this.USB_SERVICE);
-        scale = new ScaleConnector(this, usbManager);
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(ScaleConnector.ACTION_USB_PERMISSION);
@@ -50,8 +55,9 @@ public class MainActivity extends AppCompatActivity {
     OnClickListener b1OnClick = new OnClickListener(){
         public void onClick(View v)
         {
-            Log.i("UI", "Button pressed. Received string: " + scale.getLastReceivedMessage());
-            t1.setText("new int: " + scale.getLastReceivedMessage());
+
+            Log.i("MainActivity_UI", "Button pressed. Received string: " + ScaleConnector.getInstance().getLastReceivedMessage());
+            t1.setText("new int: " + ScaleConnector.getInstance().getLastReceivedMessage());
         }
 
 
@@ -65,16 +71,16 @@ public class MainActivity extends AppCompatActivity {
                 boolean granted =
                         intent.getExtras().getBoolean(UsbManager.EXTRA_PERMISSION_GRANTED);
                 if (granted) {
-                    scale.connectToScale();
+                    ScaleConnector.getInstance().connectToScale();
                     //b1.setEnabled(true);
                 } else {
                     Log.d("SERIAL", "PERM NOT GRANTED");
                 }
             } else if (intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
-                scale.onUsbConnect();
+                ScaleConnector.getInstance().onUsbConnect();
                 //b1.setEnabled(true);
             } else if (intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
-                scale.onUsbDisconnect();
+                ScaleConnector.getInstance().onUsbDisconnect();
                 //b1.setEnabled(false);
             }
         };

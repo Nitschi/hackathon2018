@@ -19,6 +19,19 @@ import java.util.Map;
  */
 
 public class ScaleConnector {
+    private static ScaleConnector instance = null;
+    public static ScaleConnector getInstance()
+    {
+        return instance;
+    }
+    public static void createInstance(android.content.Context context, UsbManager usbManager)
+    {
+        if (instance == null)
+        {
+            instance = new ScaleConnector(context, usbManager);
+        }
+    }
+
     public static final String ACTION_USB_PERMISSION = "com.hariharan.arduinousb.USB_PERMISSION";
     UsbDevice device;
     UsbDeviceConnection connection;
@@ -29,7 +42,7 @@ public class ScaleConnector {
 
     private String lastReceivedMessage = "";
 
-    public  ScaleConnector(android.content.Context context, UsbManager usbManager)
+    private  ScaleConnector(android.content.Context context, UsbManager usbManager)
     {
         this.context = context;
         this.usbManager = usbManager;
