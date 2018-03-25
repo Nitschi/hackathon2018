@@ -105,13 +105,27 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IScale
         scaleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
+                Intent myIntent = new Intent(view.getContext(), MainActivity.class);
+                startActivity(myIntent);
+            }
+        });
+
+        FloatingActionButton awardsButton = (FloatingActionButton) findViewById(R.id.awards);
+        awardsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                if(game.getPlayers().size() == 0){
+                    Snackbar.make(view, "No awards without users", Snackbar.LENGTH_SHORT)
+                            .setAction("Action", null).show();
+                    return;
+                }
                 Intent myIntent = new Intent(view.getContext(), AwardCeremony.class);
                 startActivity(myIntent);
             }
         });
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton addButton = (FloatingActionButton) findViewById(R.id.add);
+        addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(LocalMultiplayer.this);
