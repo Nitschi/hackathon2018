@@ -146,6 +146,11 @@ public class MainActivity extends AppCompatActivity implements IScaleUpdateListe
     }
 
     @Override
+    public void onAlcoholUpdate(double newAlcoholRatio) {
+        Log.i("onAlcoholUpdate_UI", "onAlcoholUpdate called. Value: " + newAlcoholRatio);
+    }
+
+    @Override
     public void onDrinkRemoved() {
         removedCounter++;
         updateEvent();
