@@ -246,14 +246,14 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        builder.setMessage("You have " + bloodAlcohol + " per mille");
+                        builder.setMessage("You have around " + bloodAlcohol + " percent of alcohol in your blood.");
                         builder.setPositiveButton("Damn it!", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {}});
                         builder.setNegativeButton("Retry", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                builder.setMessage("You have " + bloodAlcohol + " per mille");
+                                builder.setMessage("You have " + bloodAlcohol + " percent of alcohol in your blood.");
                                 builder.create().show();
                             }});
                         builder.create().show();
