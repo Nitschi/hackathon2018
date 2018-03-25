@@ -105,7 +105,7 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IScale
         scaleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                Intent myIntent = new Intent(view.getContext(), MainActivity.class);
+                Intent myIntent = new Intent(view.getContext(), AwardCeremony.class);
                 startActivity(myIntent);
             }
         });
