@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Random;
 
 /**
- * Created by alexander on 24.03.18.
+ * Created by Alexander on 24.03.18.
  */
 
 public class GameLogic implements IScaleEventListener {
@@ -13,7 +13,7 @@ public class GameLogic implements IScaleEventListener {
     private static GameLogic game;
     private GameLogic() {
 
-        players = new ArrayList<Player>();
+        players = new ArrayList<>();
     }
     public static GameLogic getInstance() {
         if( GameLogic.game == null) {
@@ -38,7 +38,7 @@ public class GameLogic implements IScaleEventListener {
     private int limit = 0;
 
     public void resetGame(){
-        players = new ArrayList<Player>();
+        players = new ArrayList<>();
         startRound();
     }
 
@@ -76,15 +76,24 @@ public class GameLogic implements IScaleEventListener {
         currentPlayer.setScore(currentPlayer.getScore() + score);
 
         if(score == -20){
-            updateUI("You drank too much! -20 points and drink one glass of water!");
+            updateUI("Wowowow, slow down! That were " + (int) deltaAmount + "ml instead of " + limit + "ml. " +
+                    "Learn your limit!" + score + " points and grab a glass of water");
         } else{
-            updateUI("Cheers! You just earned " + score + " additional points!");
+            updateUI("Cheers! You just earned " + score + " additional points! Good Job!");
         }
 
     }
 
     public void addPlayer (String name) {
         players.add(new Player(name));
+    }
+
+    public void removePlayer(int index) {
+        players.remove(index);
+    }
+
+    public void changePlayerName(int index, String name){
+        players.get(index).setName(name);
     }
 
     public ArrayList<Player> getPlayers(){
