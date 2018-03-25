@@ -27,6 +27,15 @@
                 android:resource="@xml/device_filter" />
         </activity>
         <activity
+            android:name=".AwardCeremony"
+            android:label="title_activity_award_ceremony"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_scale"
             android:theme="@style/AppTheme.NoActionBar"
