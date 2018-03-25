@@ -192,4 +192,9 @@ public class MainActivity extends ListenerRegisterActivity implements IScaleEven
             }
         });
     }
+
+    @Override
+    public void onLimitExceeded() {
+
+    }
 }

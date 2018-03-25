@@ -77,7 +77,13 @@ public class GameLogic implements IScaleEventListener {
 
         if(score == -20){
             updateUI("Wowowow, slow down! That were " + (int) deltaAmount + "ml instead of " + limit + "ml. " +
-                    "Learn your limit!" + score + " points and grab a glass of water");
+                    "Learn your limit!" + score + " points and check your alcohol level!");
+            /*try {
+                wait(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }*/
+            limitExceeded();
         } else{
             updateUI("Cheers! You just earned " + score + " additional points! Good Job!");
         }
@@ -119,6 +125,13 @@ public class GameLogic implements IScaleEventListener {
         listener.onUIUpdate(players, message);
     }
 
+    private void limitExceeded(){
+        if (listener == null) {
+            return;
+        }
+        listener.onLimitExceeded();
+    }
+
     @Override
     public void onDrinkRemoved() {
         if( currentState == BEER_ON_SCALE_BEFORE_DRINK) {
@@ -143,4 +156,5 @@ public class GameLogic implements IScaleEventListener {
         }
 
     }
+
 }

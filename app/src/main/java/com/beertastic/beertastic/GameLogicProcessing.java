@@ -8,5 +8,6 @@ import java.util.ArrayList;
  */
 interface IGameLogicListener {
     void onUIUpdate(ArrayList<Player> players, String message);
+    void onLimitExceeded();
 }
 

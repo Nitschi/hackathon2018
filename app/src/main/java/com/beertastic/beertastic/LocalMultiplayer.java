@@ -34,6 +34,8 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
     private ScaleProcessor scaleProcessor;
     GameLogic game = GameLogic.getInstance();
 
+    private double bloodAlcohol;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -205,8 +207,10 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
     }
 
     @Override
-    public void onAlcoholUpdate(double newAlcoholRatio) {
-
+    public void onAlcoholUpdate(double newBloodAlcohol) {
+        if(newBloodAlcohol > bloodAlcohol){
+            bloodAlcohol = newBloodAlcohol;
+        }
     }
 
     @Override
@@ -228,6 +232,41 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
                 gameMessage.setText(message);
                 gameView.setBackgroundColor(Color.parseColor(players.get(0).getColor()));
                 adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    @Override
+    public void onLimitExceeded() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(LocalMultiplayer.this);
+                builder.setTitle("Police Control!");
+                bloodAlcohol = 0;
+
+                builder.setMessage("Please test your alcohol levels by blowing on the sensor and then press OK");
+                // Set up the buttons
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        builder.setMessage("You have " + bloodAlcohol + " Promille");
+                        builder.setPositiveButton("Damn it!", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {}});
+                        builder.setNegativeButton("Retry", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                builder.setMessage("You have " + bloodAlcohol + " Promille");
+                                builder.create().show();
+                            }});
+                        builder.create().show();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                dialog.show();
             }
         });
     }
