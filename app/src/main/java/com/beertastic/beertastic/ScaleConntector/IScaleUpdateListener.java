@@ -5,7 +5,7 @@ package com.beertastic.beertastic.ScaleConntector;
  */
 public interface IScaleUpdateListener{
     void onWeightUpdate(double newWeight);
-    void onAlcoholUpdate(double newAlcoholRatio);
+    void onAlcoholUpdate(double newBloodAlcohol);
     void onScaleConnect();
     void onScaleDisconnect();
 }
