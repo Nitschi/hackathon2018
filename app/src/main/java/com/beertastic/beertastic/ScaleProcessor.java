@@ -1,5 +1,9 @@
 package com.beertastic.beertastic;
 
+import android.util.Log;
+
+import com.beertastic.beertastic.ScaleConntector.IScaleUpdateListener;
+
 import java.util.ArrayList;
 
 /**
@@ -12,6 +16,15 @@ interface IScaleEventListener {
 }
 
 public class ScaleProcessor {
+
+    private static ScaleProcessor instance;
+
+    public static ScaleProcessor getInstance() {
+        if( instance == null) {
+            instance = new ScaleProcessor();
+        }
+        return instance;
+    }
 
     private final int historyLength = 5;
     private double[] history = new double[historyLength];
@@ -27,15 +40,37 @@ public class ScaleProcessor {
 
     private ArrayList<IScaleEventListener> listeners = new ArrayList<>();
 
-    public ScaleProcessor(){
+    private ScaleProcessor(){
 
     }
 
     public void registerListener(IScaleEventListener i){
-        listeners.add(i);
+        if (!listeners.contains(i))
+        {
+            listeners.add(i);
+            Log.i("ScaleProcessor", "listener registered. Number of registered listeners: " + listeners.size());
+        }
+        {
+            Log.i("ScaleProcessor", "listener has already been registered");
+        }
+    }
+
+    public void deregisterUpdateListener(IScaleEventListener i)
+    {
+        if (listeners.contains(i))
+        {
+            listeners.remove(i);
+            Log.i("ScaleProcessor", "listener removed. Number of remaining listeners: " + listeners.size());
+        }
+        else
+        {
+            Log.e("ScaleProcessor", "the listener to be removed was not registered.  Number of remaining listeners: " + listeners.size());
+        }
     }
 
     public void postData(double newWeight){
+        Log.v("ScaleProcessor", "current weight: " + String.valueOf(newWeight));
+
         history[idx] = newWeight;
         idx = ++idx % historyLength;
 
@@ -51,6 +86,7 @@ public class ScaleProcessor {
         avg /= historyLength;
 
         if (max - min > noiseThreshold){
+            Log.w("ScaleProcessor", "noice threshold (" + String.valueOf(noiseThreshold) + ") exeeded. max-min=" + String.valueOf(max-min));
             return;
         }
 
