@@ -87,6 +87,10 @@ public class GameLogic implements IScaleEventListener {
         players.add(new Player(name));
     }
 
+    public void removePlayer(Player player) {
+        players.remove(player);
+    }
+
     public ArrayList<Player> getPlayers(){
         return players;
     }
