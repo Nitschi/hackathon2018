@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">Know Your Limits</string>
+    <string name="app_name">Know Your Limit</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_local_multiplayer">Know Your Limits</string>
+    <string name="title_activity_local_multiplayer">Know Your Limit</string>
     <string name="title_activity_scale">Scale Output</string>
     <string name="title_activity_award_ceremony">The Winners</string>
 

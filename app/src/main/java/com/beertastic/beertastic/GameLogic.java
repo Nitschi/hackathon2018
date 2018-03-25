@@ -82,7 +82,7 @@ public class GameLogic implements IScaleEventListener {
                     "Learn your limit! " + score + " points!");
             limitExceeded();
         } else{
-            updateUI("Cheers! You just earned " + score + " additional points! Good Job!");
+            updateUI("Cheers! That were " + (int) deltaAmount + "ml. You just earned " + score + " additional points! Good Job!");
         }
 
     }
