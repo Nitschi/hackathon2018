@@ -23,7 +23,7 @@
     <include layout="@layout/content_local_multiplayer" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
@@ -37,5 +37,13 @@
         android:layout_gravity="bottom|center"
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@drawable/ic_kitchen_scale_white" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/awards"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="@dimen/fab_margin"
+        app:srcCompat="@drawable/ic_crown" />
 
 </android.support.design.widget.CoordinatorLayout>
