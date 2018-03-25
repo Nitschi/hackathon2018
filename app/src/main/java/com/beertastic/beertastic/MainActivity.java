@@ -19,9 +19,10 @@ import com.beertastic.beertastic.ScaleConntector.IScaleUpdateListener;
 import com.beertastic.beertastic.ScaleConntector.MockScaleConnector;
 import com.beertastic.beertastic.ScaleConntector.ScaleConnector;
 
+import java.util.ArrayList;
 
 
-public class MainActivity extends AppCompatActivity implements IScaleUpdateListener, IScaleEventListener {
+public class MainActivity extends AppCompatActivity implements IScaleUpdateListener, IScaleEventListener, IGameLogicListener {
 
     Button b1;
     TextView t1;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements IScaleUpdateListe
     UsbManager usbManager;
 
     private ScaleProcessor scaleProcessor;
+    private GameLogic gameLogic;
 
 
     @Override
@@ -58,6 +60,15 @@ public class MainActivity extends AppCompatActivity implements IScaleUpdateListe
         scaleProcessor = new ScaleProcessor();
         scaleProcessor.registerListener(this);
 
+        gameLogic = GameLogic.getInstance();
+        gameLogic.setListener(this);
+        gameLogic.addPlayer("Player 1");
+        gameLogic.addPlayer("Player 2");
+
+        scaleProcessor.registerListener(gameLogic);
+
+        gameLogic.startRound();
+
         IntentFilter filter = new IntentFilter();
         filter.addAction(AbstractScaleConnector.ACTION_USB_PERMISSION);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
@@ -67,8 +78,8 @@ public class MainActivity extends AppCompatActivity implements IScaleUpdateListe
         //call the onUsbConnect method to cover the case in which the scale is already connected with the phone when the app starts
         AbstractScaleConnector.getInstance().onUsbConnect();
 
-        Intent myIntent = new Intent(this, LocalMultiplayer.class);
-        startActivity(myIntent);
+        //Intent myIntent = new Intent(this, LocalMultiplayer.class);
+        //startActivity(myIntent);
     }
 
     @Override
@@ -150,14 +161,14 @@ public class MainActivity extends AppCompatActivity implements IScaleUpdateListe
     @Override
     public void onDrinkRemoved() {
         removedCounter++;
-        updateEvent();
+        //updateEvent();
     }
 
     @Override
     public void onDrinkPlaced(double amount) {
         placedCounter++;
         placedAmount = amount;
-        updateEvent();
+        //updateEvent();
     }
 
     private void updateEvent(){
@@ -180,5 +191,15 @@ public class MainActivity extends AppCompatActivity implements IScaleUpdateListe
     @Override
     public void onScaleDisconnect() {
         Log.i("MainActivity_UI", "scale disconnected.");
+    }
+
+    @Override
+    public void onUIUpdate(final ArrayList<Player> players, final String message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ttest.setText("CurrPlayer: " + players.get(0).getName() + ", Message: " + message);
+            }
+        });
     }
 }

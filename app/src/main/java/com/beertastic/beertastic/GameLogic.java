@@ -42,7 +42,7 @@ public class GameLogic implements IScaleEventListener {
         startRound();
     }
 
-    private void startRound() {
+    public void startRound() {
         currentState = WAIT_FOR_NEXT_PLAYER;
         Random rand = new Random();
         limit = (int) (rand.nextDouble() * 80 + 20); //random value between 20 and 100
