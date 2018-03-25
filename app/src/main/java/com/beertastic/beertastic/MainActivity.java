@@ -27,7 +27,6 @@ public class MainActivity extends ListenerRegisterActivity implements IScaleEven
     int placedCounter = 0;
     double placedAmount = 0;
     //ScaleConnector scale = null;
-    UsbManager usbManager;
 
     private ScaleProcessor scaleProcessor;
     private GameLogic gameLogic;
@@ -43,37 +42,12 @@ public class MainActivity extends ListenerRegisterActivity implements IScaleEven
         t1 = (TextView)findViewById(R.id.textViewSerialOuput);
         t2 = (TextView)findViewById(R.id.textViewPercentage);
 
-        usbManager = (UsbManager) getSystemService(this.USB_SERVICE);
-
         scaleProcessor = new ScaleProcessor();
         scaleProcessor.registerListener(this);
 
         AbstractScaleConnector.getInstance().onUsbConnect();
 
     }
-
-
-    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() { //Broadcast Receiver to automatically start and stop the Serial connection.
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(AbstractScaleConnector.ACTION_USB_PERMISSION)) {
-                boolean granted =
-                        intent.getExtras().getBoolean(UsbManager.EXTRA_PERMISSION_GRANTED);
-                if (granted) {
-                    AbstractScaleConnector.getInstance().connectToScale();
-                    //b1.setEnabled(true);
-                } else {
-                    Log.d("SERIAL", "PERM NOT GRANTED");
-                }
-            } else if (intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
-                AbstractScaleConnector.getInstance().onUsbConnect();
-                //b1.setEnabled(true);
-            } else if (intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
-                AbstractScaleConnector.getInstance().onUsbDisconnect();
-                //b1.setEnabled(false);
-            }
-        };
-    };
 
 
     public boolean onCreateOptionsMenu(Menu menu) {

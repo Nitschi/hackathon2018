@@ -57,7 +57,6 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IScale
         scaleProcessor.registerListener(game);
         scaleProcessor.registerListener(this);
 
-        usbManager = (UsbManager) getSystemService(this.USB_SERVICE);
         ScaleConnector.createInstance(getApplicationContext());
         AbstractScaleConnector.getInstance().onUsbConnect();
 
