@@ -114,7 +114,7 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IScale
         awardsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                if(game.getPlayers().size() == 0){
+                if(GameLogic.getInstance().getPlayers().size() == 0){
                     Snackbar.make(view, "No awards without users", Snackbar.LENGTH_SHORT)
                             .setAction("Action", null).show();
                     return;
