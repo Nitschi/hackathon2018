@@ -4,13 +4,11 @@ HX711 scale;
 
 void setup() {
   Serial.begin(38400);
-  Serial.println("HX711 Demo");
-
-  Serial.println("Initializing the scale");
   // parameter "gain" is ommited; the default value 128 is used by the library
   // HX711.DOUT	- pin #A1
   // HX711.PD_SCK	- pin #A0
-  scale.begin(A1, A0);
+  //scale.begin(A1, A0);
+  scale.begin(7, 6);
 
   /*
   Serial.println("Before setting up the scale:");

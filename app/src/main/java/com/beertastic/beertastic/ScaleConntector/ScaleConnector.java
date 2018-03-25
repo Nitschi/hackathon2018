@@ -96,15 +96,29 @@ public class ScaleConnector extends AbstractScaleConnector {
                 byteBuffer.get(array);
 
                 try {
-                    double newValue = Double.parseDouble(new String(array));
+                    String receivedString = new String(array);
+                    int colonIndex = receivedString.indexOf(':');
+                    double weightValue;
+                    if (colonIndex == -1) {
+                        weightValue = Double.parseDouble(receivedString);
+                    }
+                    else
+                    {
+                        weightValue = Double.parseDouble(receivedString.substring(0, colonIndex));
+                        double alcoholRatio = Double.parseDouble(receivedString.substring(colonIndex + 1, receivedString.length() - 1));
+                        for (IScaleUpdateListener listener:updateListeners) {
+                            listener.onAlcoholUpdate(alcoholRatio);
+                        }
+                        Log.v("serial", "alcohol ratio: " + alcoholRatio);
+                    }
                     for (IScaleUpdateListener listener:updateListeners) {
-                        listener.onWeightUpdate(newValue);
+                        listener.onWeightUpdate(weightValue);
                     }
                     if (updateListeners.size() == 0)
                     {
                         Log.v("ScaleConnector", "no listener registered.");
                     }
-                    lastReceivedMessage = String.valueOf(newValue);
+                    lastReceivedMessage = String.valueOf(weightValue);
                     Log.v("serial", "position:" + position + " current string: " + lastReceivedMessage);
 
                 }
