@@ -22,6 +22,8 @@ public class GameLogic implements IScaleEventListener {
         return GameLogic.game;
     }
 
+    private final int finishUpLimit = 1000;
+
     public void setListener(IGameLogicListener listener) {
         this.listener = listener;
     }
@@ -58,14 +60,11 @@ public class GameLogic implements IScaleEventListener {
             limit = limit/2;
             if(amount < limit + 10){
                 updateUI("Drink up! That amount is not worth another challenge.");
-                limit = 1000;
-            }
-            else{
-                updateUI("Drink now. But know your limit of "+ String.valueOf(limit) + "ml!");
+                limit = finishUpLimit;
+                return;
             }
         }
-
-
+        updateUI("Drink now. But know your limit of "+ String.valueOf(limit) + "ml!");
     }
 
     private int calculateScore(double amount){
@@ -93,7 +92,13 @@ public class GameLogic implements IScaleEventListener {
                     "Learn your limit! " + score + " points!");
             limitExceeded();
         } else{
-            updateUI("Cheers! That were " + (int) deltaAmount + "ml. You just earned " + score + " additional points! Good Job!");
+            if (limit != finishUpLimit) {
+                updateUI("Cheers! That were " + (int) deltaAmount + "ml. You just earned " + score + " additional points! Good Job!");
+            }
+            else
+            {
+                updateUI("Good job! Fetch yourself a new drink!");
+            }
         }
 
     }
@@ -156,7 +161,12 @@ public class GameLogic implements IScaleEventListener {
     public void onDrinkRemoved() {
         if( currentState == BEER_ON_SCALE_BEFORE_DRINK) {
             currentState = PLAYER_DRINKING;
-            updateUI("Enjoy your drink, but don't forget your limit is " + limit + "ml!");
+            if (limit != finishUpLimit) {
+                updateUI("Enjoy your drink, but don't forget your limit is " + limit + "ml!");
+            }
+            else{
+                updateUI("Bottoms up!");
+            }
         } else if (currentState == BEER_ON_SCALE_AFTER_DRINK) {
             currentState = WAIT_FOR_NEXT_PLAYER;
             Collections.rotate(players , -1 );  //rotates the list, effectively setting the finished player to the
