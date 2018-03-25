@@ -32,7 +32,7 @@ public class AwardCeremony extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.content_award_ceremony);
+        setContentView(R.layout.activity_award_ceremony);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
