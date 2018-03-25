@@ -28,7 +28,7 @@
         </activity>
         <activity
             android:name=".AwardCeremony"
-            android:label="title_activity_award_ceremony"
+            android:label="@string/title_activity_award_ceremony"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait">
             <intent-filter>
