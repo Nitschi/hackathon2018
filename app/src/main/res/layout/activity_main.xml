@@ -37,6 +37,12 @@
             android:layout_height="wrap_content"
             android:text="TextView" />
 
+        <Button
+            android:id="@+id/buttonStartGame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Start Game" />
+
     </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>

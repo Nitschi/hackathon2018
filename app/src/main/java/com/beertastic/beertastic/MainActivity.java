@@ -22,9 +22,9 @@ import com.beertastic.beertastic.ScaleConntector.ScaleConnector;
 import java.util.ArrayList;
 
 
-public class MainActivity extends AppCompatActivity implements IScaleUpdateListener, IScaleEventListener, IGameLogicListener {
+public class MainActivity extends ListenerRegisterActivity implements IScaleEventListener, IGameLogicListener {
 
-    Button b1;
+    Button buttonStartGame;
     TextView t1;
     TextView t2;
     TextView ttest;
@@ -48,6 +48,15 @@ public class MainActivity extends AppCompatActivity implements IScaleUpdateListe
         t1 = (TextView)findViewById(R.id.textViewSerialOuput);
         t2 = (TextView)findViewById(R.id.textViewPercentage);
         ttest = (TextView)findViewById(R.id.textView2);
+        buttonStartGame = (Button)findViewById(R.id.buttonStartGame);
+
+        buttonStartGame.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(view.getContext(), LocalMultiplayer.class);
+                startActivity(myIntent);
+            }
+        });
 
         usbManager = (UsbManager) getSystemService(this.USB_SERVICE);
 //        if (scale == null) {
@@ -71,23 +80,6 @@ public class MainActivity extends AppCompatActivity implements IScaleUpdateListe
         //call the onUsbConnect method to cover the case in which the scale is already connected with the phone when the app starts
         AbstractScaleConnector.getInstance().onUsbConnect();
 
-        //Intent myIntent = new Intent(this, LocalMultiplayer.class);
-        //startActivity(myIntent);
-    }
-
-    @Override
-    protected void onResume()
-    {
-        super.onResume();
-        AbstractScaleConnector.getInstance().registerUpdateListener(this);
-    }
-
-    @Override
-
-    protected void onPause()
-    {
-        super.onPause();
-        AbstractScaleConnector.getInstance().deregisterUpdateListener(this);
     }
 
 

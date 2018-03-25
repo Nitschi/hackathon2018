@@ -26,7 +26,7 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
-public class LocalMultiplayer extends AppCompatActivity {
+public class LocalMultiplayer extends ListenerRegisterActivity {
     ListView listView;
     TextView activePlayer;
     TextView activePlayerScore;
@@ -200,4 +200,23 @@ public class LocalMultiplayer extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onWeightUpdate(double newWeight) {
+
+    }
+
+    @Override
+    public void onAlcoholUpdate(double newAlcoholRatio) {
+
+    }
+
+    @Override
+    public void onScaleConnect() {
+
+    }
+
+    @Override
+    public void onScaleDisconnect() {
+
+    }
 }
