@@ -3,10 +3,8 @@ package com.beertastic.beertastic;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -15,8 +13,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import com.beertastic.beertastic.ScaleConntector.AbstractScaleConnector;
-import com.beertastic.beertastic.ScaleConntector.IScaleUpdateListener;
-import com.beertastic.beertastic.ScaleConntector.MockScaleConnector;
 import com.beertastic.beertastic.ScaleConntector.ScaleConnector;
 
 import java.util.ArrayList;
@@ -24,7 +20,6 @@ import java.util.ArrayList;
 
 public class MainActivity extends ListenerRegisterActivity implements IScaleEventListener, IGameLogicListener {
 
-    Button buttonStartGame;
     TextView t1;
     TextView t2;
     TextView ttest;
@@ -47,37 +42,12 @@ public class MainActivity extends ListenerRegisterActivity implements IScaleEven
 
         t1 = (TextView)findViewById(R.id.textViewSerialOuput);
         t2 = (TextView)findViewById(R.id.textViewPercentage);
-        ttest = (TextView)findViewById(R.id.textView2);
-        buttonStartGame = (Button)findViewById(R.id.buttonStartGame);
-
-        buttonStartGame.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent myIntent = new Intent(view.getContext(), LocalMultiplayer.class);
-                startActivity(myIntent);
-            }
-        });
 
         usbManager = (UsbManager) getSystemService(this.USB_SERVICE);
-//        if (scale == null) {
-//            Log.i("MainActivity_UI", "new Scale Object created.");
-//            scale = new ScaleConnector(this, usbManager);
-//        }
-        ScaleConnector.createInstance(getApplicationContext());
-        //MockScaleConnector.createInstance();
 
         scaleProcessor = new ScaleProcessor();
         scaleProcessor.registerListener(this);
-//
-//        gameLogic = GameLogic.getInstance();
-//        gameLogic.setListener(this);
-//        gameLogic.addPlayer("Player 1");
-//        gameLogic.addPlayer("Player 2");
-//
-//        scaleProcessor.registerListener(gameLogic);
-//
-//        gameLogic.startRound();
-        //call the onUsbConnect method to cover the case in which the scale is already connected with the phone when the app starts
+
         AbstractScaleConnector.getInstance().onUsbConnect();
 
     }

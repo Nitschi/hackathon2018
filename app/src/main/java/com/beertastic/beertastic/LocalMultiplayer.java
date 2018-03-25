@@ -1,8 +1,12 @@
 package com.beertastic.beertastic;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -20,10 +24,13 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.beertastic.beertastic.ScaleConntector.AbstractScaleConnector;
+import com.beertastic.beertastic.ScaleConntector.ScaleConnector;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-public class LocalMultiplayer extends ListenerRegisterActivity implements IGameLogicListener {
+public class LocalMultiplayer extends ListenerRegisterActivity implements IScaleEventListener, IGameLogicListener {
     ListView listView;
     TextView activePlayer;
     TextView gameMessage;
@@ -33,6 +40,8 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
 
     private ScaleProcessor scaleProcessor;
     GameLogic game = GameLogic.getInstance();
+
+    UsbManager usbManager;
 
     private double bloodAlcohol;
 
@@ -46,7 +55,11 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
         scaleProcessor = new ScaleProcessor();
         game.setListener(this);
         scaleProcessor.registerListener(game);
+        scaleProcessor.registerListener(this);
 
+        usbManager = (UsbManager) getSystemService(this.USB_SERVICE);
+        ScaleConnector.createInstance(getApplicationContext());
+        AbstractScaleConnector.getInstance().onUsbConnect();
 
         activePlayer = (TextView) findViewById(R.id.active_player);
         gameMessage = (TextView) findViewById(R.id.game_message);
@@ -55,8 +68,8 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
         activePlayer.setTextColor(getColor(android.R.color.white));
         gameMessage.setTextColor(getColor(android.R.color.white));
 
-        activePlayer.setPadding(50,50,50,0);
-        gameMessage.setPadding(50,0,50,50);
+        activePlayer.setPadding(50, 50, 50, 0);
+        gameMessage.setPadding(50, 0, 50, 50);
 
         listView = (ListView) findViewById(R.id.listview_players);
 
@@ -66,7 +79,7 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
         // Third parameter - ID of the TextView to which the data is written
         // Forth - the Array of data
         adapter = new ArrayAdapter<Player>(this,
-                android.R.layout.simple_list_item_2, android.R.id.text1, game.getPlayers()){
+                android.R.layout.simple_list_item_2, android.R.id.text1, game.getPlayers()) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 // Get the current item from ListView
@@ -81,16 +94,25 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
                 text1.setText(game.getPlayers().get(position).getName());
                 text1.setTextColor(getColor(android.R.color.white));
                 text1.setTypeface(null, Typeface.BOLD);
-                text1.setPadding(50,50,50,0);
+                text1.setPadding(50, 50, 50, 0);
                 text2.setText(String.valueOf(game.getPlayers().get(position).getScore()));
                 text2.setTextColor(getColor(android.R.color.white));
-                text2.setPadding(50,0,50,50);
+                text2.setPadding(50, 0, 50, 50);
 
                 return view;
             }
         };
         // Assign adapter to ListView
         listView.setAdapter(adapter);
+
+        FloatingActionButton scaleButton = (FloatingActionButton) findViewById(R.id.scale);
+        scaleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                Intent myIntent = new Intent(view.getContext(), MainActivity.class);
+                startActivity(myIntent);
+            }
+        });
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -109,7 +131,7 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if(input.getText().length() > 0){ // only if name provided
+                        if (input.getText().length() > 0) { // only if name provided
                             game.addPlayer(input.getText().toString());
                         } else {
                             Snackbar.make(view, "Please enter a name!", Snackbar.LENGTH_SHORT)
@@ -149,7 +171,7 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if(input.getText().length() > 0){
+                        if (input.getText().length() > 0) {
                             game.changePlayerName(position, input.getText().toString());
                         } else {
                             Snackbar.make(view, "Please enter a name!", Snackbar.LENGTH_SHORT)
@@ -182,7 +204,9 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
                                 })
                                 .create()
                                 .show();
-                    };
+                    }
+
+                    ;
                 });
 
                 builder.setView(input);
@@ -198,12 +222,12 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
         int bottleWeight = 315;
         WeightToDrinkConverter conv = new WeightToDrinkConverter(bottleWeight, 330);
         final int finalWeight = conv.getAmount(newWeight);
-        scaleProcessor.postData(newWeight-bottleWeight);
+        scaleProcessor.postData(newWeight - bottleWeight);
     }
 
     @Override
     public void onAlcoholUpdate(double newBloodAlcohol) {
-        if(newBloodAlcohol > bloodAlcohol){
+        if (newBloodAlcohol > bloodAlcohol) {
             DecimalFormat df = new DecimalFormat("#.###");
             bloodAlcohol = Double.valueOf(df.format(newBloodAlcohol));
         }
@@ -211,13 +235,16 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
 
     @Override
     public void onScaleConnect() {
-
+        Snackbar.make(getWindow().findViewById(R.id.listview_players), "Scale connected", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
     }
 
     @Override
     public void onScaleDisconnect() {
-
+        Snackbar.make(getWindow().findViewById(R.id.listview_players), "Scale disconnected", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
     }
+
     @Override
     public void onUIUpdate(final ArrayList<Player> players, final String message) {
         runOnUiThread(new Runnable() {
@@ -249,13 +276,16 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
                         builder.setMessage("You have " + bloodAlcohol + " per mille");
                         builder.setPositiveButton("Damn it!", new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {}});
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
                         builder.setNegativeButton("Retry", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 builder.setMessage("You have " + bloodAlcohol + " per mille");
                                 builder.create().show();
-                            }});
+                            }
+                        });
                         builder.create().show();
                     }
                 });
@@ -264,4 +294,39 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
             }
         });
     }
+
+    @Override
+    public void onDrinkRemoved() {
+
+    }
+
+    @Override
+    public void onDrinkPlaced(double amount) {
+
+    }
+
+    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() { //Broadcast Receiver to automatically start and stop the Serial connection.
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(AbstractScaleConnector.ACTION_USB_PERMISSION)) {
+                boolean granted =
+                        intent.getExtras().getBoolean(UsbManager.EXTRA_PERMISSION_GRANTED);
+                if (granted) {
+                    AbstractScaleConnector.getInstance().connectToScale();
+                    //b1.setEnabled(true);
+                } else {
+                    Log.d("SERIAL", "PERM NOT GRANTED");
+                }
+            } else if (intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
+                AbstractScaleConnector.getInstance().onUsbConnect();
+                //b1.setEnabled(true);
+            } else if (intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
+                AbstractScaleConnector.getInstance().onUsbDisconnect();
+                //b1.setEnabled(false);
+            }
+        }
+
+        ;
+    };
+
 }

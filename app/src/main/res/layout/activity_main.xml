@@ -6,43 +6,20 @@
     android:layout_height="match_parent"
     tools:context="com.beertastic.beertastic.MainActivity">
 
-    <LinearLayout
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="visible">
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-        <TextView
-            android:id="@+id/textViewSerialOuput"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Serial Ouput"
-            android:textAlignment="center"
-            android:textColor="@android:color/black"
-            android:textSize="36sp"
-            android:textStyle="bold"
-            android:visibility="visible" />
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-        <TextView
-            android:id="@+id/textViewPercentage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="percentage"
-            android:textAlignment="center"
-            android:textSize="24sp" />
+    </android.support.design.widget.AppBarLayout>
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TextView" />
-
-        <Button
-            android:id="@+id/buttonStartGame"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Start Game" />
-
-    </LinearLayout>
+    <include layout="@layout/content_main" />
 
 </android.support.design.widget.CoordinatorLayout>
