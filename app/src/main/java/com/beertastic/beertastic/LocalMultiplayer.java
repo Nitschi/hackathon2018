@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class LocalMultiplayer extends ListenerRegisterActivity implements IGameLogicListener {
@@ -203,7 +204,8 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
     @Override
     public void onAlcoholUpdate(double newBloodAlcohol) {
         if(newBloodAlcohol > bloodAlcohol){
-            bloodAlcohol = newBloodAlcohol;
+            DecimalFormat df = new DecimalFormat("#.###");
+            bloodAlcohol = Double.valueOf(df.format(newBloodAlcohol));
         }
     }
 
