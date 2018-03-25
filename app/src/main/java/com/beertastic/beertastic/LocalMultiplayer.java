@@ -1,6 +1,5 @@
 package com.beertastic.beertastic;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -11,10 +10,10 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -22,18 +21,16 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
-public class LocalMultiplayer extends AppCompatActivity {
+public class LocalMultiplayer extends AppCompatActivity implements IGameLogicListener {
     ListView listView;
     TextView activePlayer;
     TextView activePlayerScore;
     TextView gameMessage;
     LinearLayout gameView;
 
-    ArrayList<Player> players;
+    GameLogic game = GameLogic.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +38,55 @@ public class LocalMultiplayer extends AppCompatActivity {
         setContentView(R.layout.activity_local_multiplayer);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        activePlayer = (TextView) findViewById(R.id.active_player);
+        activePlayerScore = (TextView) findViewById(R.id.active_player_score);
+        gameMessage = (TextView) findViewById(R.id.game_message);
+        gameView = (LinearLayout) findViewById(R.id.gameview);
+
+        activePlayer.setTextColor(getColor(android.R.color.white));
+        activePlayerScore.setTextColor(getColor(android.R.color.white));
+        gameMessage.setTextColor(getColor(android.R.color.white));
+
+        activePlayer.setPadding(50,50,50,0);
+        activePlayerScore.setPadding(50,0,50,0);
+        gameMessage.setPadding(50,0,50,50);
+
+        listView = (ListView) findViewById(R.id.listview_players);
+
+        // Define a new Adapter
+        // First parameter - Context
+        // Second parameter - Layout for the row
+        // Third parameter - ID of the TextView to which the data is written
+        // Forth - the Array of data
+        final ArrayAdapter<Player> adapter = new ArrayAdapter<Player>(this,
+                android.R.layout.simple_list_item_2, android.R.id.text1, game.getPlayers()){
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                // Get the current item from ListView
+                View view = super.getView(position, convertView, parent);
+
+                //view.setVisibility((position == 0) ? View.INVISIBLE : View.VISIBLE); // hide current player
+
+                // Set list item color from color array
+                view.setBackgroundColor(Color.parseColor(game.getPlayers().get(position).getColor()));
+
+                TextView text1 = (TextView) view.findViewById(android.R.id.text1);
+                TextView text2 = (TextView) view.findViewById(android.R.id.text2);
+
+                text1.setText(game.getPlayers().get(position).getName());
+                text1.setTextColor(getColor(android.R.color.white));
+                text1.setTypeface(null, Typeface.BOLD);
+                text1.setPadding(50,50,50,0);
+                text2.setText(String.valueOf(game.getPlayers().get(position).getScore()));
+                text2.setTextColor(getColor(android.R.color.white));
+                text2.setPadding(50,0,50,50);
+
+                return view;
+            }
+        };
+        // Assign adapter to ListView
+        listView.setAdapter(adapter);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -60,7 +106,7 @@ public class LocalMultiplayer extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if(input.getText().length() > 0){ // only if name provided
-                            players.add(new Player(input.getText().toString()));
+                            game.addPlayer(input.getText().toString());
                         } else {
                             Snackbar.make(view, "Please enter a name!", Snackbar.LENGTH_SHORT)
                                     .setAction("Action", null).show();
@@ -81,64 +127,6 @@ public class LocalMultiplayer extends AppCompatActivity {
             }
         });
 
-        players = new ArrayList<Player>();
-        players.add(new Player("Johannes"));
-        players.add(new Player("Felix"));
-
-        activePlayer = (TextView) findViewById(R.id.active_player);
-        activePlayerScore = (TextView) findViewById(R.id.active_player_score);
-        gameMessage = (TextView) findViewById(R.id.game_message);
-        activePlayer.setTextColor(getColor(android.R.color.white));
-        activePlayerScore.setTextColor(getColor(android.R.color.white));
-        gameMessage.setTextColor(getColor(android.R.color.white));
-
-        activePlayer.setPadding(50,50,50,0);
-        activePlayerScore.setPadding(50,0,50,0);
-        gameMessage.setPadding(50,0,50,50);
-
-
-        // Method to update stuff called by Alex
-        activePlayer.setText(players.get(0).getName());
-        activePlayerScore.setText(String.valueOf(players.get(0).getScore()));
-
-        gameView = (LinearLayout) findViewById(R.id.gameview);
-        gameView.setBackgroundColor(Color.parseColor(players.get(0).getColor()));
-
-        listView = (ListView) findViewById(R.id.listview_players);
-
-        // Define a new Adapter
-        // First parameter - Context
-        // Second parameter - Layout for the row
-        // Third parameter - ID of the TextView to which the data is written
-        // Forth - the Array of data
-        ArrayAdapter<Player> adapter = new ArrayAdapter<Player>(this,
-                android.R.layout.simple_list_item_2, android.R.id.text1, players) {
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                // Get the current item from ListView
-                View view = super.getView(position, convertView, parent);
-
-                //view.setVisibility((position == 0) ? View.INVISIBLE : View.VISIBLE); // hide current player
-
-                // Set list item color from color array
-                view.setBackgroundColor(Color.parseColor(players.get(position).getColor()));
-
-                TextView text1 = (TextView) view.findViewById(android.R.id.text1);
-                TextView text2 = (TextView) view.findViewById(android.R.id.text2);
-
-                text1.setText(players.get(position).getName());
-                text1.setTextColor(getColor(android.R.color.white));
-                text1.setTypeface(null, Typeface.BOLD);
-                text1.setPadding(50,50,50,0);
-                text2.setText(String.valueOf(players.get(position).getScore()));
-                text2.setTextColor(getColor(android.R.color.white));
-                text2.setPadding(50,0,50,50);
-
-                return view;
-            }
-        };
-        // Assign adapter to ListView
-        listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -151,14 +139,14 @@ public class LocalMultiplayer extends AppCompatActivity {
                 final EditText input = new EditText(LocalMultiplayer.this);
                 // Expected input type
                 input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-                input.setText(players.get(position).getName());
+                input.setText(game.getPlayers().get(position).getName());
 
                 // Set up the buttons
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if(input.getText().length() > 0){
-                            players.get(position).setName(input.getText().toString());
+                            game.changePlayerName(position, input.getText().toString());
                         } else {
                             Snackbar.make(view, "Please enter a name!", Snackbar.LENGTH_SHORT)
                                     .setAction("Action", null).show();
@@ -169,15 +157,15 @@ public class LocalMultiplayer extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         new AlertDialog.Builder(LocalMultiplayer.this).setTitle("Confirm Delete")
-                                .setMessage("Are you sure to delete " + players.get(position).getName() + "?")
+                                .setMessage("Are you sure to delete " + game.getPlayers().get(position).getName() + "?")
                                 .setPositiveButton("Yes",
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
                                                 // Perform Action & Dismiss dialog
                                                 dialog.dismiss();
-                                                Snackbar.make(view, "Player " + players.get(position).getName() + " removed", Snackbar.LENGTH_LONG)
+                                                Snackbar.make(view, "Player " + game.getPlayers().get(position).getName() + " removed", Snackbar.LENGTH_LONG)
                                                         .setAction("Action", null).show();
-                                                players.remove(position);
+                                                game.removePlayer(position);
                                             }
                                         })
                                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -200,4 +188,13 @@ public class LocalMultiplayer extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onUIUpdate(ArrayList<Player> players, String message) {
+        //player = players.get(0);
+        //this.players = players; // update local copy of list
+
+        //activePlayer.setText(player.getName());
+        //activePlayerScore.setText(String.valueOf(player.getScore()));
+        //gameView.setBackgroundColor(Color.parseColor(player.getColor()));
+    }
 }
