@@ -38,9 +38,6 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IScale
 
     ArrayAdapter<Player> adapter;
 
-    private ScaleProcessor scaleProcessor;
-    GameLogic game = GameLogic.getInstance();
-
     UsbManager usbManager;
 
     private double bloodAlcohol;
@@ -52,10 +49,10 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IScale
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        scaleProcessor = new ScaleProcessor();
-        game.setListener(this);
-        scaleProcessor.registerListener(game);
-        scaleProcessor.registerListener(this);
+        ScaleProcessor scaleProcessor = ScaleProcessor.getInstance();
+        GameLogic gameLogic = GameLogic.getInstance();
+
+        scaleProcessor.registerListener(gameLogic);
 
         ScaleConnector.createInstance(getApplicationContext());
         AbstractScaleConnector.getInstance().onUsbConnect();
@@ -78,23 +75,23 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IScale
         // Third parameter - ID of the TextView to which the data is written
         // Forth - the Array of data
         adapter = new ArrayAdapter<Player>(this,
-                android.R.layout.simple_list_item_2, android.R.id.text1, game.getPlayers()) {
+                android.R.layout.simple_list_item_2, android.R.id.text1, gameLogic.getPlayers()) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 // Get the current item from ListView
                 View view = super.getView(position, convertView, parent);
 
                 // Set list item color from color array
-                view.setBackgroundColor(Color.parseColor(game.getPlayers().get(position).getColor()));
+                view.setBackgroundColor(Color.parseColor(GameLogic.getInstance().getPlayers().get(position).getColor()));
 
                 TextView text1 = (TextView) view.findViewById(android.R.id.text1);
                 TextView text2 = (TextView) view.findViewById(android.R.id.text2);
 
-                text1.setText(game.getPlayers().get(position).getName());
+                text1.setText(GameLogic.getInstance().getPlayers().get(position).getName());
                 text1.setTextColor(getColor(android.R.color.white));
                 text1.setTypeface(null, Typeface.BOLD);
                 text1.setPadding(50, 50, 50, 0);
-                text2.setText(String.valueOf(game.getPlayers().get(position).getScore()));
+                text2.setText(String.valueOf(GameLogic.getInstance().getPlayers().get(position).getScore()));
                 text2.setTextColor(getColor(android.R.color.white));
                 text2.setPadding(50, 0, 50, 50);
 
@@ -131,7 +128,7 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IScale
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (input.getText().length() > 0) { // only if name provided
-                            game.addPlayer(input.getText().toString());
+                            GameLogic.getInstance().addPlayer(input.getText().toString());
                         } else {
                             Snackbar.make(view, "Please enter a name!", Snackbar.LENGTH_SHORT)
                                     .setAction("Action", null).show();
@@ -169,14 +166,14 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IScale
                 final EditText input = new EditText(LocalMultiplayer.this);
                 // Expected input type
                 input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-                input.setText(game.getPlayers().get(position).getName());
+                input.setText(GameLogic.getInstance().getPlayers().get(position).getName());
 
                 // Set up the buttons
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (input.getText().length() > 0) {
-                            game.changePlayerName(position, input.getText().toString());
+                            GameLogic.getInstance().changePlayerName(position, input.getText().toString());
                         } else {
                             Snackbar.make(view, "Please enter a name!", Snackbar.LENGTH_SHORT)
                                     .setAction("Action", null).show();
@@ -187,16 +184,16 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IScale
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         new AlertDialog.Builder(LocalMultiplayer.this).setTitle("Confirm Delete")
-                                .setMessage("Are you sure to delete " + game.getPlayers().get(position).getName() + "?")
+                                .setMessage("Are you sure to delete " + GameLogic.getInstance().getPlayers().get(position).getName() + "?")
                                 .setPositiveButton("Yes",
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
                                                 // Perform Action & Dismiss dialog
                                                 dialog.dismiss();
                                                 // Notify user, need to find new view since origin gets deleted
-                                                Snackbar.make(getWindow().findViewById(R.id.listview_players), "Player " + game.getPlayers().get(position).getName() + " removed", Snackbar.LENGTH_LONG)
+                                                Snackbar.make(getWindow().findViewById(R.id.listview_players), "Player " + GameLogic.getInstance().getPlayers().get(position).getName() + " removed", Snackbar.LENGTH_LONG)
                                                         .setAction("Action", null).show();
-                                                game.removePlayer(position);
+                                                GameLogic.getInstance().removePlayer(position);
                                             }
                                         })
                                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -226,7 +223,7 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IScale
         int bottleWeight = 315;
         WeightToDrinkConverter conv = new WeightToDrinkConverter(bottleWeight, 330);
         final int finalWeight = conv.getAmount(newWeight);
-        scaleProcessor.postData(newWeight - bottleWeight);
+        ScaleProcessor.getInstance().postData(newWeight - bottleWeight);
     }
 
     @Override
@@ -332,5 +329,19 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IScale
 
         ;
     };
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        GameLogic.getInstance().setListener(this);
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        ScaleProcessor.getInstance().deregisterUpdateListener(this);
+    }
 
 }

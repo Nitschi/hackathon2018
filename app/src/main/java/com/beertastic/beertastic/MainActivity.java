@@ -18,7 +18,7 @@ import com.beertastic.beertastic.ScaleConntector.ScaleConnector;
 import java.util.ArrayList;
 
 
-public class MainActivity extends ListenerRegisterActivity implements IScaleEventListener, IGameLogicListener {
+public class MainActivity extends ListenerRegisterActivity implements IGameLogicListener {
 
     TextView t1;
     TextView t2;
@@ -41,11 +41,6 @@ public class MainActivity extends ListenerRegisterActivity implements IScaleEven
 
         t1 = (TextView)findViewById(R.id.textViewSerialOuput);
         t2 = (TextView)findViewById(R.id.textViewPercentage);
-
-        scaleProcessor = new ScaleProcessor();
-        scaleProcessor.registerListener(this);
-
-        AbstractScaleConnector.getInstance().onUsbConnect();
 
     }
 
