@@ -68,15 +68,15 @@ public class MainActivity extends ListenerRegisterActivity implements IScaleEven
 
         scaleProcessor = new ScaleProcessor();
         scaleProcessor.registerListener(this);
-
-        gameLogic = GameLogic.getInstance();
-        gameLogic.setListener(this);
-        gameLogic.addPlayer("Player 1");
-        gameLogic.addPlayer("Player 2");
-
-        scaleProcessor.registerListener(gameLogic);
-
-        gameLogic.startRound();
+//
+//        gameLogic = GameLogic.getInstance();
+//        gameLogic.setListener(this);
+//        gameLogic.addPlayer("Player 1");
+//        gameLogic.addPlayer("Player 2");
+//
+//        scaleProcessor.registerListener(gameLogic);
+//
+//        gameLogic.startRound();
         //call the onUsbConnect method to cover the case in which the scale is already connected with the phone when the app starts
         AbstractScaleConnector.getInstance().onUsbConnect();
 

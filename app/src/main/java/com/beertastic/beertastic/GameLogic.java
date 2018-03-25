@@ -33,7 +33,7 @@ public class GameLogic implements IScaleEventListener {
     private static final int BEER_ON_SCALE_BEFORE_DRINK = 1;
     private static final int PLAYER_DRINKING = 2;
     private static final int BEER_ON_SCALE_AFTER_DRINK = 3;
-    private int currentState = WAIT_FOR_NEXT_PLAYER;
+    private int currentState = -1;
     private double amountBefore = 0;
     private int limit = 0;
 
@@ -86,6 +86,7 @@ public class GameLogic implements IScaleEventListener {
 
     public void addPlayer (String name) {
         players.add(new Player(name));
+        if (players.size() == 1) startRound();
     }
 
     public void removePlayer(int index) {
@@ -113,7 +114,7 @@ public class GameLogic implements IScaleEventListener {
         if( currentState == BEER_ON_SCALE_BEFORE_DRINK) {
             currentState = PLAYER_DRINKING;
             updateUI("Enjoy your drink, but don't forget your limit is " + limit + "ml!");
-        } else {
+        } else if (currentState == BEER_ON_SCALE_AFTER_DRINK) {
             currentState = WAIT_FOR_NEXT_PLAYER;
             Collections.rotate(players , -1 );  //rotates the list, effectively setting the finished player to the
             // end and the second player to the beginning of the list

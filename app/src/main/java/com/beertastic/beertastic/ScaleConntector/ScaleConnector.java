@@ -110,12 +110,12 @@ public class ScaleConnector extends AbstractScaleConnector {
                     int colonIndex = receivedString.indexOf(':');
                     double weightValue;
                     if (colonIndex == -1) {
-                        weightValue = Double.parseDouble(receivedString);
+                        weightValue = Double.parseDouble(receivedString)/1000;
                     }
                     else
                     {
-                        weightValue = Double.parseDouble(receivedString.substring(0, colonIndex));
-                        double alcoholRatio = Double.parseDouble(receivedString.substring(colonIndex + 1, receivedString.length() - 1));
+                        weightValue = Double.parseDouble(receivedString.substring(0, colonIndex))/1000;
+                        double alcoholRatio = Double.parseDouble(receivedString.substring(colonIndex + 1, receivedString.length() - 1))/1000;
                         for (IScaleUpdateListener listener:updateListeners) {
                             listener.onAlcoholUpdate(alcoholRatio);
                         }

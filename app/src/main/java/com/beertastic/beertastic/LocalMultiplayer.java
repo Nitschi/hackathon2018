@@ -29,6 +29,7 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
     TextView gameMessage;
     LinearLayout gameView;
 
+    private ScaleProcessor scaleProcessor;
     GameLogic game = GameLogic.getInstance();
 
     @Override
@@ -38,6 +39,11 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        scaleProcessor = new ScaleProcessor();
+        game.setListener(this);
+        scaleProcessor.registerListener(game);
+
+
         activePlayer = (TextView) findViewById(R.id.active_player);
         activePlayerScore = (TextView) findViewById(R.id.active_player_score);
         gameMessage = (TextView) findViewById(R.id.game_message);
@@ -45,7 +51,7 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
 
         activePlayer.setTextColor(getColor(android.R.color.white));
         activePlayerScore.setTextColor(getColor(android.R.color.white));
-        gameMessage.setTextColor(getColor(android.R.color.white));
+        //gameMessage.setTextColor(getColor(android.R.color.white));
 
         activePlayer.setPadding(50,50,50,0);
         activePlayerScore.setPadding(50,0,50,0);
@@ -189,7 +195,10 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
 
     @Override
     public void onWeightUpdate(double newWeight) {
-
+        int bottleWeight = 315;
+        WeightToDrinkConverter conv = new WeightToDrinkConverter(bottleWeight, 330);
+        final int finalWeight = conv.getAmount(newWeight);
+        scaleProcessor.postData(newWeight-bottleWeight);
     }
 
     @Override
@@ -207,7 +216,14 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
 
     }
     @Override
-    public void onUIUpdate(ArrayList<Player> players, String message) {
+    public void onUIUpdate(ArrayList<Player> players, final String message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                gameMessage.setText(message);
+            }
+        });
+
         //player = players.get(0);
         //this.players = players; // update local copy of list
 

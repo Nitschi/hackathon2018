@@ -31,5 +31,5 @@ void loop() {
     /*-----------------------------------------------------------------------*/
     
     scaleReading = scale.get_units(3);
-    Serial.println(String(scaleReading)+":"+String(ratio));
+    Serial.println(String(scaleReading*1000)+":"+String(ratio*1000));
 }
