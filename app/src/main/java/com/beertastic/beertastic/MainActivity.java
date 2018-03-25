@@ -67,6 +67,8 @@ public class MainActivity extends AppCompatActivity implements IScaleUpdateListe
         //call the onUsbConnect method to cover the case in which the scale is already connected with the phone when the app starts
         AbstractScaleConnector.getInstance().onUsbConnect();
 
+        Intent myIntent = new Intent(this, LocalMultiplayer.class);
+        startActivity(myIntent);
     }
 
     @Override

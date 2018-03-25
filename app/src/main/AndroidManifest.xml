@@ -26,7 +26,10 @@
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter" />
         </activity>
-        <activity android:name=".LocalMultiplayer"></activity>
+        <activity
+            android:name=".LocalMultiplayer"
+            android:label="@string/title_activity_local_multiplayer"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
