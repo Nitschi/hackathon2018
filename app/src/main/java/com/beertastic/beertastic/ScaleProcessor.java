@@ -69,6 +69,8 @@ public class ScaleProcessor {
     }
 
     public void postData(double newWeight){
+        Log.v("ScaleProcessor", "current weight: " + String.valueOf(newWeight));
+
         history[idx] = newWeight;
         idx = ++idx % historyLength;
 
@@ -84,6 +86,7 @@ public class ScaleProcessor {
         avg /= historyLength;
 
         if (max - min > noiseThreshold){
+            Log.w("ScaleProcessor", "noice threshold (" + String.valueOf(noiseThreshold) + ") exeeded. max-min=" + String.valueOf(max-min));
             return;
         }
 

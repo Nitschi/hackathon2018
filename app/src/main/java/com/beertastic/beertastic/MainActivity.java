@@ -28,7 +28,6 @@ public class MainActivity extends ListenerRegisterActivity implements IGameLogic
     double placedAmount = 0;
     //ScaleConnector scale = null;
 
-    private ScaleProcessor scaleProcessor;
     private GameLogic gameLogic;
 
 
@@ -79,7 +78,7 @@ public class MainActivity extends ListenerRegisterActivity implements IGameLogic
                 t2.setText(String.valueOf(finalPercentage) + "%");
             }
         });
-        scaleProcessor.postData(finalWeight);
+        ScaleProcessor.getInstance().postData(finalWeight);
     }
 
     @Override
