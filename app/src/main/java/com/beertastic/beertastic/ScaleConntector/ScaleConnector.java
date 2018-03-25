@@ -1,7 +1,10 @@
 package com.beertastic.beertastic.ScaleConntector;
 
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
@@ -31,19 +34,26 @@ public class ScaleConnector extends AbstractScaleConnector {
 
     boolean isConnected = false;
 
-    public static void createInstance(android.content.Context context, UsbManager usbManager)
+    public static void createInstance(android.content.Context context)
     {
         if (instance == null)
         {
-            instance = new ScaleConnector(context, usbManager);
+            instance = new ScaleConnector(context);
         }
     }
 
-    private  ScaleConnector(android.content.Context context, UsbManager usbManager)
+    private  ScaleConnector(android.content.Context context)
     {
         this.context = context;
-        this.usbManager = usbManager;
+        this.usbManager = (UsbManager) context.getSystemService(context.USB_SERVICE);
         byteBuffer = ByteBuffer.allocate(100);
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(AbstractScaleConnector.ACTION_USB_PERMISSION);
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
+        context.registerReceiver(broadcastReceiver, filter);
+
     }
 
     @Override
@@ -184,6 +194,28 @@ public class ScaleConnector extends AbstractScaleConnector {
             Log.d("serial", "tried to close serial connection but serial connection was null " + exception.toString());
         }
     }
+
+    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() { //Broadcast Receiver to automatically start and stop the Serial connection.
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(AbstractScaleConnector.ACTION_USB_PERMISSION)) {
+                boolean granted =
+                        intent.getExtras().getBoolean(UsbManager.EXTRA_PERMISSION_GRANTED);
+                if (granted) {
+                    AbstractScaleConnector.getInstance().connectToScale();
+                    //b1.setEnabled(true);
+                } else {
+                    Log.d("SERIAL", "PERM NOT GRANTED");
+                }
+            } else if (intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
+                AbstractScaleConnector.getInstance().onUsbConnect();
+                //b1.setEnabled(true);
+            } else if (intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
+                AbstractScaleConnector.getInstance().onUsbDisconnect();
+                //b1.setEnabled(false);
+            }
+        };
+    };
 
 
 }

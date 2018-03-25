@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements IScaleUpdateListe
 //            Log.i("MainActivity_UI", "new Scale Object created.");
 //            scale = new ScaleConnector(this, usbManager);
 //        }
-        ScaleConnector.createInstance(this, usbManager);
+        ScaleConnector.createInstance(getApplicationContext());
         //MockScaleConnector.createInstance();
 
         scaleProcessor = new ScaleProcessor();
@@ -68,13 +68,6 @@ public class MainActivity extends AppCompatActivity implements IScaleUpdateListe
         scaleProcessor.registerListener(gameLogic);
 
         gameLogic.startRound();
-
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(AbstractScaleConnector.ACTION_USB_PERMISSION);
-        filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
-        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
-        registerReceiver(broadcastReceiver, filter);
-
         //call the onUsbConnect method to cover the case in which the scale is already connected with the phone when the app starts
         AbstractScaleConnector.getInstance().onUsbConnect();
 
