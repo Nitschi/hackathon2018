@@ -158,6 +158,11 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IScale
             @Override
             public void onItemClick(AdapterView<?> parent, final View view,
                                     final int position, long id) {
+                if(position == 0){
+                    Snackbar.make(view, "Cannot modify current player", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                    return;
+                }
                 final AlertDialog.Builder builder = new AlertDialog.Builder(LocalMultiplayer.this);
                 builder.setTitle("Edit Player");
 
