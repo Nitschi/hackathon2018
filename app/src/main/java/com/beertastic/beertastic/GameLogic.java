@@ -37,6 +37,8 @@ public class GameLogic implements IScaleEventListener {
     private double amountBefore = 0;
     private int limit = 0;
 
+    private String lastMessage;
+
     public void resetGame(){
         players = new ArrayList<>();
         startRound();
@@ -112,12 +114,24 @@ public class GameLogic implements IScaleEventListener {
 
     public Player getCurrentPlayer() {return players.get(0);}
 
-    private void updateUI(String message){
-
+    private void updateUI(String message)
+    {
         if (listener == null) {
             return;
         }
+        lastMessage = message;
         listener.onUIUpdate(players, message);
+    }
+
+    public void gameInitUIUpdate()
+    {
+        if (players.isEmpty()) {
+            updateUI("Please add players to start.");
+        }
+        else
+        {
+            updateUI(lastMessage);
+        }
     }
 
     private void limitExceeded(){
@@ -151,5 +165,4 @@ public class GameLogic implements IScaleEventListener {
         }
 
     }
-
 }

@@ -60,13 +60,6 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IScale
         activePlayer = (TextView) findViewById(R.id.active_player);
         gameMessage = (TextView) findViewById(R.id.game_message);
         gameView = (LinearLayout) findViewById(R.id.gameview);
-
-        activePlayer.setTextColor(getColor(android.R.color.white));
-        gameMessage.setTextColor(getColor(android.R.color.white));
-
-        activePlayer.setPadding(50, 50, 50, 0);
-        gameMessage.setPadding(50, 0, 50, 50);
-
         listView = (ListView) findViewById(R.id.listview_players);
 
         // Define a new Adapter
@@ -265,9 +258,12 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IScale
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                activePlayer.setText(players.get(0).getName());
+                if (players.size() != 0) {
+                    activePlayer.setText(players.get(0).getName());
+                    gameView.setBackgroundColor(Color.parseColor(players.get(0).getColor()));
+                }
+
                 gameMessage.setText(message);
-                gameView.setBackgroundColor(Color.parseColor(players.get(0).getColor()));
                 adapter.notifyDataSetChanged();
             }
         });
@@ -349,6 +345,7 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IScale
     {
         super.onResume();
         GameLogic.getInstance().setListener(this);
+        GameLogic.getInstance().gameInitUIUpdate();
     }
 
     @Override

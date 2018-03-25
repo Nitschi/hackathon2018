@@ -17,21 +17,32 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingStart="?android:listPreferredItemPaddingStart"
-            android:paddingEnd="?android:listPreferredItemPaddingEnd">
+            android:paddingEnd="?android:listPreferredItemPaddingEnd"
+            android:background="@color/colorAccent">
 
-            <TextView android:id="@+id/active_player"
+            <TextView
+                android:id="@+id/active_player"
+                style="@android:style/TextAppearance.Large"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingEnd="50px"
+                android:paddingStart="50px"
+                android:paddingTop="50px"
+                android:text="No Player"
                 android:textAppearance="?attr/textAppearanceListItem"
-                android:text="Player"
-                android:textStyle="bold"
-                style="@android:style/TextAppearance.Large" />
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
 
-            <TextView android:id="@+id/game_message"
+            <TextView
+                android:id="@+id/game_message"
+                style="@android:style/TextAppearance.Large"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingBottom="50px"
+                android:paddingEnd="50px"
+                android:paddingStart="50px"
                 android:text="Message"
-                style="@android:style/TextAppearance.Large"/>
+                android:textColor="@android:color/white" />
 
         </LinearLayout>
         <Space
