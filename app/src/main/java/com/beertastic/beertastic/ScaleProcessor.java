@@ -35,7 +35,7 @@ public class ScaleProcessor {
     private Status currStatus = Status.DrinkOff;
     private double currWeight = 0;
 
-    private double emptyThreshold = -10;
+    private double emptyThreshold = -100;
     private double noiseThreshold = 2.;
 
     private ArrayList<IScaleEventListener> listeners = new ArrayList<>();
