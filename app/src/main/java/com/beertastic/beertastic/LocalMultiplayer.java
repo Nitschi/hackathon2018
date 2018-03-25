@@ -29,6 +29,8 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
     TextView gameMessage;
     LinearLayout gameView;
 
+    ArrayAdapter<Player> adapter;
+
     private ScaleProcessor scaleProcessor;
     GameLogic game = GameLogic.getInstance();
 
@@ -64,7 +66,7 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
         // Second parameter - Layout for the row
         // Third parameter - ID of the TextView to which the data is written
         // Forth - the Array of data
-        final ArrayAdapter<Player> adapter = new ArrayAdapter<Player>(this,
+        adapter = new ArrayAdapter<Player>(this,
                 android.R.layout.simple_list_item_2, android.R.id.text1, game.getPlayers()){
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
@@ -217,19 +219,16 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
 
     }
     @Override
-    public void onUIUpdate(ArrayList<Player> players, final String message) {
+    public void onUIUpdate(final ArrayList<Player> players, final String message) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                activePlayer.setText(players.get(0).getName());
+                activePlayerScore.setText(String.valueOf(players.get(0).getScore()));
                 gameMessage.setText(message);
+                gameView.setBackgroundColor(Color.parseColor(players.get(0).getColor()));
+                adapter.notifyDataSetChanged();
             }
         });
-
-        //player = players.get(0);
-        //this.players = players; // update local copy of list
-
-        //activePlayer.setText(player.getName());
-        //activePlayerScore.setText(String.valueOf(player.getScore()));
-        //gameView.setBackgroundColor(Color.parseColor(player.getColor()));
     }
 }
