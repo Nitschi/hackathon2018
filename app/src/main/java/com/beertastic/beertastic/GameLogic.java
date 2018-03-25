@@ -53,7 +53,18 @@ public class GameLogic implements IScaleEventListener {
 
     private void weighBeerBeforeDrink(double amount){
         amountBefore = amount;
-        updateUI("Drink now. But know your limit of "+ String.valueOf(limit) + "ml!");
+
+        if(amount < limit + 10 ){
+            limit = limit/2;
+            if(amount < limit + 10){
+                updateUI("Drink up! That amount is not worth another challenge.");
+                limit = 1000;
+            }
+            else{
+                updateUI("Drink now. But know your limit of "+ String.valueOf(limit) + "ml!");
+            }
+        }
+
 
     }
 

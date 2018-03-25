@@ -38,7 +38,6 @@ public class AwardCeremony extends AppCompatActivity {
 
         HorizontalBarChart barChart = (HorizontalBarChart) findViewById(R.id.barchart);
         players = game.getPlayers();
-
         Collections.sort(players, new Comparator<Player>() {
             @Override
             public int compare(Player p1, Player p2) {
