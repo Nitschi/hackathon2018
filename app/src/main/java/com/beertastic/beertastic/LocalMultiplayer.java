@@ -162,7 +162,8 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
                                             public void onClick(DialogInterface dialog, int which) {
                                                 // Perform Action & Dismiss dialog
                                                 dialog.dismiss();
-                                                Snackbar.make(view, "Player " + game.getPlayers().get(position).getName() + " removed", Snackbar.LENGTH_LONG)
+                                                // Notify user, need to find new view since origin gets deleted
+                                                Snackbar.make(getWindow().findViewById(R.id.listview_players), "Player " + game.getPlayers().get(position).getName() + " removed", Snackbar.LENGTH_LONG)
                                                         .setAction("Action", null).show();
                                                 game.removePlayer(position);
                                             }
