@@ -100,6 +100,10 @@ public class GameLogic implements IScaleEventListener {
         return players;
     }
 
+    public ArrayList<Player> getPendingPlayers() {return new ArrayList<>(players.subList(1,players.size()));}
+
+    public Player getCurrentPlayer() {return players.get(0);}
+
     private void updateUI(String message){
 
         if (listener == null) {
