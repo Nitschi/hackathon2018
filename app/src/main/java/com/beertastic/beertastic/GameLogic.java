@@ -77,7 +77,7 @@ public class GameLogic implements IScaleEventListener {
 
         if(score == -20){
             updateUI("Wowowow, slow down! That were " + (int) deltaAmount + "ml instead of " + limit + "ml. " +
-                    "Learn your limit!" + score + " points and check your alcohol level!");
+                    "Learn your limit! " + score + " points and check your alcohol level!");
             /*try {
                 wait(3000);
             } catch (InterruptedException e) {

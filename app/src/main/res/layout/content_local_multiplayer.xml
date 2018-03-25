@@ -26,11 +26,6 @@
                 android:text="Player"
                 android:textStyle="bold"
                 style="@android:style/TextAppearance.Large" />
-            <TextView android:id="@+id/active_player_score"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Score"
-                style="@android:style/TextAppearance.Small"/>
 
             <TextView android:id="@+id/game_message"
                 android:layout_width="match_parent"

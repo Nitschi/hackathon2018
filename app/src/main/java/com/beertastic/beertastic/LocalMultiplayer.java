@@ -25,7 +25,6 @@ import java.util.ArrayList;
 public class LocalMultiplayer extends ListenerRegisterActivity implements IGameLogicListener {
     ListView listView;
     TextView activePlayer;
-    TextView activePlayerScore;
     TextView gameMessage;
     LinearLayout gameView;
 
@@ -49,16 +48,13 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
 
 
         activePlayer = (TextView) findViewById(R.id.active_player);
-        activePlayerScore = (TextView) findViewById(R.id.active_player_score);
         gameMessage = (TextView) findViewById(R.id.game_message);
         gameView = (LinearLayout) findViewById(R.id.gameview);
 
         activePlayer.setTextColor(getColor(android.R.color.white));
-        activePlayerScore.setTextColor(getColor(android.R.color.white));
-        //gameMessage.setTextColor(getColor(android.R.color.white));
+        gameMessage.setTextColor(getColor(android.R.color.white));
 
         activePlayer.setPadding(50,50,50,0);
-        activePlayerScore.setPadding(50,0,50,0);
         gameMessage.setPadding(50,0,50,50);
 
         listView = (ListView) findViewById(R.id.listview_players);
@@ -74,8 +70,6 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
             public View getView(int position, View convertView, ViewGroup parent) {
                 // Get the current item from ListView
                 View view = super.getView(position, convertView, parent);
-
-                //view.setVisibility((position == 0) ? View.INVISIBLE : View.VISIBLE); // hide current player
 
                 // Set list item color from color array
                 view.setBackgroundColor(Color.parseColor(game.getPlayers().get(position).getColor()));
@@ -228,7 +222,6 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
             @Override
             public void run() {
                 activePlayer.setText(players.get(0).getName());
-                activePlayerScore.setText(String.valueOf(players.get(0).getScore()));
                 gameMessage.setText(message);
                 gameView.setBackgroundColor(Color.parseColor(players.get(0).getColor()));
                 adapter.notifyDataSetChanged();
@@ -251,21 +244,20 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IGameL
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        builder.setMessage("You have " + bloodAlcohol + " Promille");
+                        builder.setMessage("You have " + bloodAlcohol + " per mille");
                         builder.setPositiveButton("Damn it!", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {}});
                         builder.setNegativeButton("Retry", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                builder.setMessage("You have " + bloodAlcohol + " Promille");
+                                builder.setMessage("You have " + bloodAlcohol + " per mille");
                                 builder.create().show();
                             }});
                         builder.create().show();
                     }
                 });
                 AlertDialog dialog = builder.create();
-                dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
                 dialog.show();
             }
         });
