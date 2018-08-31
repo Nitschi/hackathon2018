@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Beertastic.iml" filepath="$PROJECT_DIR$/Beertastic.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\Users\Johannes\AndroidStudioProjects\Beertastic\hackathon.iml" filepath="C:\Users\Johannes\AndroidStudioProjects\Beertastic\hackathon.iml" />
     </modules>
   </component>
 </project>

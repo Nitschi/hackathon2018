@@ -107,22 +107,8 @@ public class ScaleConnector extends AbstractScaleConnector {
 
                 try {
                     String receivedString = new String(array);
-                    int colonIndex = receivedString.indexOf(':');
-                    double weightValue;
-                    if (colonIndex == -1) {
-                        weightValue = Double.parseDouble(receivedString)/1000;
-                    }
-                    else
-                    {
-                        weightValue = Double.parseDouble(receivedString.substring(0, colonIndex))/1000;
-                        double alcoholRatio = Double.parseDouble(receivedString.substring(colonIndex + 1, receivedString.length() - 1))/1000;
-                        double bloodAlcohol = Math.pow(10, (Math.log10(alcoholRatio)-0.18185)/-0.4037)/2600; //percent from ratio
-                        for (IScaleUpdateListener listener:updateListeners) {
-                            listener.onAlcoholUpdate(bloodAlcohol);
-                        }
-                        Log.v("serial", "alcohol ratio: " + alcoholRatio);
-                        Log.v("serial", "blood alcohol: " + bloodAlcohol);
-                    }
+                    double weightValue = Double.parseDouble(receivedString)/1000;
+
                     for (IScaleUpdateListener listener:updateListeners) {
                         listener.onWeightUpdate(weightValue);
                     }

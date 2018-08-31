@@ -40,8 +40,6 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IScale
 
     UsbManager usbManager;
 
-    private double bloodAlcohol;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -234,14 +232,6 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IScale
     }
 
     @Override
-    public void onAlcoholUpdate(double newBloodAlcohol) {
-        if (newBloodAlcohol > bloodAlcohol) {
-            DecimalFormat df = new DecimalFormat("#.###");
-            bloodAlcohol = Double.valueOf(df.format(newBloodAlcohol));
-        }
-    }
-
-    @Override
     public void onScaleConnect() {
         Snackbar.make(getWindow().findViewById(R.id.listview_players), "Scale connected", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
@@ -275,29 +265,11 @@ public class LocalMultiplayer extends ListenerRegisterActivity implements IScale
             @Override
             public void run() {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(LocalMultiplayer.this);
-                builder.setTitle("Police Control!");
-                bloodAlcohol = 0;
-
-                builder.setMessage("Please test your alcohol levels by blowing on the sensor and then press OK");
-                // Set up the buttons
+                builder.setTitle("Limit exceeded");
+                builder.setMessage("You have exceeded your limit!");
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
-                        builder.setMessage("You have around " + bloodAlcohol + " percent of alcohol in your blood.");
-                        builder.setPositiveButton("Damn it!", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        });
-                        builder.setNegativeButton("Retry", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                builder.setMessage("You have " + bloodAlcohol + " percent of alcohol in your blood.");
-                                builder.create().show();
-                            }
-                        });
-                        builder.create().show();
                     }
                 });
                 AlertDialog dialog = builder.create();

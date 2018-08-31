@@ -85,11 +85,6 @@ public class MainActivity extends ListenerRegisterActivity implements IGameLogic
     }
 
     @Override
-    public void onAlcoholUpdate(double newAlcoholRatio) {
-        Log.i("onAlcoholUpdate_UI", "onAlcoholUpdate called. Value: " + newAlcoholRatio);
-    }
-
-    @Override
     public void onDrinkRemoved() {
         removedCounter++;
         //updateEvent();
