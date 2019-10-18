@@ -4,7 +4,8 @@ Hardware required: Arduino, load cell, an alcohol sensor, Android smartphone
 
 The game:
 
-Goal: gain the most points before your drink is empty
+Goal: gain the most points before your drink is empty.
+
 When it is your turn you:
 1. Put your drink on the scale
 2. Get a challenge like: "Drink 46 ml, but not more"
